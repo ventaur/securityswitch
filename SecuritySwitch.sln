@@ -6,6 +6,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{BABBBE25-405F-4E26-9805-9BA9C188EEEB}"
 	ProjectSection(SolutionItems) = preProject
 		License.txt = License.txt
+		ReadMe.txt = ReadMe.txt
+		SecuritySwitch-v4.xsd = SecuritySwitch-v4.xsd
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Source\Tests\Tests.csproj", "{234055B7-42B2-4BEB-AB9E-0E36CFF6C305}"
