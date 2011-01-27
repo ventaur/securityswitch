@@ -28,7 +28,7 @@ namespace SecuritySwitch.Redirection {
 				response.Clear();
 
 				// Add a refresh header to the response for the new path.
-				response.AddHeader("Refresh", "0;URL=" + url);
+				response.AddHeader("Refresh", "0;URL=" + HttpUtility.HtmlAttributeEncode(url));
 
 				// Also, add JavaScript to replace the current location as backup.
 				response.Write("<html><head><title></title>");
