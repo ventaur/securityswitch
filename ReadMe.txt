@@ -57,7 +57,7 @@ Another important step that many people forget is to include the SecuritySwitch 
 
 The securitySwitch Section
 ··························
-Configuration of the module done via the securitySwitch section of a web.config file. The main element has several attributes itself, but none are required. The following section declaration is perfectly valid and will enable the module with all defaults. Note, the paths element and at least one add element entry within it are required.
+Configuration of the module is done via the securitySwitch section of a web.config file. The main element has several attributes itself, but none are required. The following section declaration is perfectly valid and will enable the module with all defaults. Note, the paths element and at least one add element entry within it are required.
 
 <securitySwitch>
 	<paths>
@@ -107,11 +107,11 @@ Within the securitySwitch section element, there should be a paths element. The 
 	</paths>
 </securitySwitch>
 
-The first entry will ensure that any request for the Contact.aspx page in the Info sub-directory of the site will be secured via HTTPS. The matchType is "Exact" and that means that only an exact request for that path will be matched. In other words if there is any tail, query string, or bookmark included in a request, it will not be redirected (e.g. /Info/Contact.aspx?ref=email, /Info/Contact.aspx#form).
+The first entry will ensure that any request for the Contact.aspx page in the Info sub-directory of the site will be secured via HTTPS. The matchType is "Exact" and that means that only an exact request for that path will be matched. In other words, if there is any tail, query string, or bookmark included in a request, it will not be redirected (e.g. /Info/Contact.aspx?ref=email, /Info/Contact.aspx#form).
 
 The next two entries will secure requests for the Login.aspx page and any path starting with /Manage. Since no matchType is specified, the default, "StartsWith", is used. This works better for these two, because often requests for the login page will have a query string attached to it with the return URL (e.g. /Login.aspx?ReturnUrl=%2fManage). Likewise, anything in the /Manage sub-directory will be secured. Note, however, that a request for /ManagementInfo.aspx will also be secured because that request starts with /Manage.
 
-The fourth and fifth entries are all about the /Admin sub-directory. The fifth entry ensures that any request to the /Admin sub-directory are secured. However, the fourth entry preempts the fifth, because it is listed beforehand. It instructs the module to access the default page in the /Admin sub-directory insecurely (via HTTP). It uses a matchType of Regex to catch the various possible ways a request may be made for the default page (e.g. /Admin, /Admin/, /Admin/Default.aspx). Also, the ignoreCase attribute is set to false to prove a point; /Admin/Default.aspx and /Admin/default.aspx are separate requests. The regex accounts for both. If we omit ignoreCase, or set it to true (the default), the regex path could be rewritten to just "~/Admin(/|/Default\.aspx)?$" and either request will be matched.
+The fourth and fifth entries are all about the /Admin sub-directory. The fifth entry ensures that any request to the /Admin sub-directory are secured. However, the fourth entry preempts the fifth, because it is listed beforehand. It instructs the module to access the default page in the /Admin sub-directory insecurely (via HTTP). It uses a matchType of "Regex" to catch the various possible ways a request may be made for the default page (e.g. /Admin, /Admin/, /Admin/Default.aspx). Also, the ignoreCase attribute is set to false to prove a point; /Admin/Default.aspx and /Admin/default.aspx are separate requests. The regex accounts for both. If we omit ignoreCase, or set it to true (the default), the regex path could be rewritten to just "~/Admin(/|/Default\.aspx)?$" and either request will be matched.
 
 The sixth entry will force the module to ignore any requests for resources in the /Media sub-directory. This is especially important if you are running a website on IIS 7.x in Integrated Mode or if you have a wildcard handler setup in IIS to process all requests through the ASP.NET pipeline. In these cases, a request for /Media/Images/Title.jpg will use the same protocol that the page it's reference in uses. If left out and a page secured via HTTPS references that image, the image request would be redirected to HTTP by the module; causing mixed security warnings in the browser.
 
