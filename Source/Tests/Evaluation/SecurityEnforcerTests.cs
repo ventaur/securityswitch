@@ -86,7 +86,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var mockRequest = new Mock<HttpRequestBase>();
 			mockRequest.SetupGet(req => req.ApplicationPath).Returns("/");
 			mockRequest.SetupGet(req => req.Url).Returns(new Uri(BaseRequestUri + PathRequestUri + QueryRequestUri));
-			mockRequest.SetupGet(req => req.Path).Returns(PathRequestUri);
+			mockRequest.SetupGet(req => req.RawUrl).Returns(PathRequestUri + QueryRequestUri);
 
 			var mockResponse = new Mock<HttpResponseBase>();
 			mockResponse.Setup(resp => resp.ApplyAppPathModifier(It.IsAny<string>())).Returns<string>(s => s);
@@ -116,7 +116,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var mockRequest = new Mock<HttpRequestBase>();
 			mockRequest.SetupGet(req => req.ApplicationPath).Returns("/");
 			mockRequest.SetupGet(req => req.Url).Returns(new Uri(BaseRequestUri + PathRequestUri + QueryRequestUri));
-			mockRequest.SetupGet(req => req.Path).Returns(PathRequestUri);
+			mockRequest.SetupGet(req => req.RawUrl).Returns(PathRequestUri + QueryRequestUri);
 			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(true);
 
 			var mockResponse = new Mock<HttpResponseBase>();
@@ -148,7 +148,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var mockRequest = new Mock<HttpRequestBase>();
 			mockRequest.SetupGet(req => req.ApplicationPath).Returns(ApplicationPathRequestUri);
 			mockRequest.SetupGet(req => req.Url).Returns(new Uri(BaseRequestUri + PathRequestUri + QueryRequestUri));
-			mockRequest.SetupGet(req => req.Path).Returns(PathRequestUri);
+			mockRequest.SetupGet(req => req.RawUrl).Returns(PathRequestUri + QueryRequestUri);
 
 			var mockResponse = new Mock<HttpResponseBase>();
 			mockResponse.Setup(resp => resp.ApplyAppPathModifier(It.IsAny<string>())).Returns<string>(s => s);

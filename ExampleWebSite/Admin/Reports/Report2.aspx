@@ -2,4 +2,6 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="primaryContent" Runat="Server">
 	<h2>Report 2</h2>
 	<p>Input for, and generation of, 'Report 2' would be here.</p>
+	<hr />
+	<iframe src='<%= ResolveUrl("~/TextDocument.ashx?textId=Some document identity") %>' style="width: 500px" />
 </asp:Content>

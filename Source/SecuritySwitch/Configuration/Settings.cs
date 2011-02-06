@@ -108,7 +108,7 @@ namespace SecuritySwitch.Configuration {
 			// Insert a special PathSetting to ignore system handlers, if indicated.
 			if (IgnoreSystemHandlers) {
 				Paths.Insert(0, new PathSetting {
-					Path = @"\.axd(?:[/\?#].*)$",
+					Path = @"\.axd(?:[/\?#].*)?$",
 					MatchType = PathMatchType.Regex,
 					IgnoreCase = true,
 					Security = RequestSecurity.Ignore

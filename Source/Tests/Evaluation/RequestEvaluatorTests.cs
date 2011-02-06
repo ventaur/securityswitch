@@ -86,7 +86,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 		public void EvaluateReturnsInsecureWhenNoSettingsPathsMatchRequestPath() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
-			mockRequest.SetupGet(req => req.Path).Returns("/Info/AboutUs.aspx");
+			mockRequest.SetupGet(req => req.RawUrl).Returns("/Info/AboutUs.aspx");
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
@@ -100,7 +100,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 		public void EvaluateReturnsSecureWhenASecureSettingsPathMatchesRequestPath() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
-			mockRequest.SetupGet(req => req.Path).Returns("/login/");
+			mockRequest.SetupGet(req => req.RawUrl).Returns("/login/");
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
@@ -131,7 +131,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			// Act.
 			for (var index = 0; index < pathsToTest.Length; index++) {
 				var path = pathsToTest[index];
-				mockRequest.SetupGet(req => req.Path).Returns(path);
+				mockRequest.SetupGet(req => req.RawUrl).Returns(path);
 				results[index] = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 			}
 

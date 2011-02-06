@@ -31,7 +31,7 @@ namespace SecuritySwitch.Evaluation {
 			}
 
 			// Find any matching path setting for the request.
-			var requestPath = request.Url.PathAndQuery;
+			var requestPath = request.RawUrl;
 			foreach (PathSetting pathSetting in settings.Paths) {
 				// Get an appropriate path matcher and test the request's path for a match.
 				var matcher = PathMatcherFactory.Create(pathSetting.MatchType);

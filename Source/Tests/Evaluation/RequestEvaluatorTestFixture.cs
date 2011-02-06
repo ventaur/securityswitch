@@ -22,6 +22,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 		public RequestEvaluatorTestFixture() {
 			var settings = new TestSettings {
 				Mode = Mode.On,
+				IgnoreSystemHandlers = true,
 				Paths = {
 					new TestPathSetting("/Info/ContactUs.aspx", PathMatchType.StartsWith, true, RequestSecurity.Insecure),
 					new TestPathSetting("/Login.aspx"),

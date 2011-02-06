@@ -44,20 +44,16 @@ namespace SecuritySwitch.Evaluation {
 				if (string.IsNullOrEmpty(baseTargetUrl)) {
 					// If there is no base target URI, just switch the protocol scheme of the current request's URI.
 					// * Account for cookie-less sessions by applying the application modifier.
-					targetUrl = targetProtocolScheme + Uri.SchemeDelimiter + request.Url.Authority + response.ApplyAppPathModifier(request.Url.PathAndQuery);
+					targetUrl = targetProtocolScheme + Uri.SchemeDelimiter + request.Url.Authority + response.ApplyAppPathModifier(request.RawUrl);
 				} else {
 					// Build the appropriate URI based on the specified target URL.
 					var uri = new StringBuilder(baseTargetUrl);
 					
 					// - Use the full request path, but remove any sub-application path.
-					uri.Append(request.Path);
+					uri.Append(request.RawUrl);
 					if (request.ApplicationPath.Length > 1) {
 						uri.Remove(baseTargetUrl.Length, request.ApplicationPath.Length);
 					}
-
-					// - Append the current query.
-					uri.Append(request.Url.Query);
-					
 
 					// Normalize the URI.
 					uri.Replace("//", "/", baseTargetUrl.Length - 1, uri.Length - baseTargetUrl.Length);
