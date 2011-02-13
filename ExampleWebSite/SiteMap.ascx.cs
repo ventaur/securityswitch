@@ -112,8 +112,8 @@ namespace ExampleWebSite {
 			var possibleParamsAndValues = new List<KeyValuePair<string, string[]>> {
 				new KeyValuePair<string, string[]>("cache", new[] { "on", "off", "auto" }),
 				new KeyValuePair<string, string[]>("environment", new[] { "Testing", "Development", "Staging", "Production" }),
-				new KeyValuePair<string, string[]>("author",
-				                                   new[] { "Matt", "John", "Sally", "Bill", "Jennifer", "Melissa", "Michael" })
+				new KeyValuePair<string, string[]>("author", new[] { "Matt", "John", "Sally", "Bill", "Jennifer", "Melissa", "Michael" }),
+				new KeyValuePair<string, string[]>("ignoreSecurity", new[] { "yes", "no" })
 			};
 
 			// How many random params will be used?
