@@ -49,6 +49,18 @@ namespace SecuritySwitch.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a flag indicating whether or not to ignore AJAX requests.
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if AJAX requests should be ignored; otherwise, <c>false</c>.
+		/// </value>
+		[ConfigurationProperty(ElementNames.IgnoreAjaxRequests)]
+		public bool IgnoreAjaxRequests {
+			get { return (bool)this[ElementNames.IgnoreAjaxRequests]; }
+			set { this[ElementNames.IgnoreAjaxRequests] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a flag indicating whether or not to ignore requests for system handlers (*.axd paths).
 		/// </summary>
 		/// <value>

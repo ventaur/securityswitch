@@ -145,5 +145,28 @@ namespace SecuritySwitch.Tests.Evaluation {
 			Assert.Equal(RequestSecurity.Ignore, results[6]);
 			Assert.Equal(RequestSecurity.Ignore, results[7]);
 		}
+
+		[Fact]
+		public void EvaluateReturnsIgnoreAppropriatelyWhenRequestIsAjax() {
+			// Arrange.
+			var mockRequest = new Mock<HttpRequestBase>();
+			mockRequest.SetupGet(req => req.RawUrl).Returns("/getdata/");
+			var requestEvaluator = new RequestEvaluator();
+
+			// Act.
+			var resultForNonAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+
+			mockRequest.Setup(req => req[RequestEvaluator.XRequestedWithHeaderKey])
+				.Returns(RequestEvaluator.AjaxRequestHeaderValue);
+			var resultForAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+
+			_fixture.Settings.IgnoreAjaxRequests = false;
+			var resultForAjaxRequestWithIgnoreOff = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+
+			// Assert.
+			Assert.NotEqual(RequestSecurity.Ignore, resultForNonAjaxRequest);
+			Assert.Equal(RequestSecurity.Ignore, resultForAjaxRequest);
+			Assert.NotEqual(RequestSecurity.Ignore, resultForAjaxRequestWithIgnoreOff);
+		}
 	}
 }

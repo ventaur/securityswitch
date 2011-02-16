@@ -7,6 +7,8 @@
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
 
+using System;
+
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
 
@@ -16,6 +18,9 @@ namespace SecuritySwitch.Evaluation {
 	/// The default implementation of IRequestEvaluator.
 	/// </summary>
 	public class RequestEvaluator : IRequestEvaluator {
+		public const string XRequestedWithHeaderKey = "X-Requested-With";
+		public const string AjaxRequestHeaderValue = "XMLHttpRequest";
+
 		/// <summary>
 		/// Evaluates the specified request for the need to switch its security.
 		/// </summary>
@@ -27,6 +32,10 @@ namespace SecuritySwitch.Evaluation {
 		public RequestSecurity Evaluate(HttpRequestBase request, Settings settings) {
 			// Test if the request matches the configured mode.
 			if (!RequestMatchesMode(request, settings.Mode)) {
+				return RequestSecurity.Ignore;
+			}
+
+			if (settings.IgnoreAjaxRequests && IsAjaxRequest(request)) {
 				return RequestSecurity.Ignore;
 			}
 
@@ -44,6 +53,22 @@ namespace SecuritySwitch.Evaluation {
 			return RequestSecurity.Insecure;
 		}
 
+
+		/// <summary>
+		/// Determines whether or not a request is an AJAX request.
+		/// </summary>
+		/// <param name="request">The request to test.</param>
+		/// <returns>
+		///   <c>true</c> if the specified request is an AJAX request; otherwise, <c>false</c>.
+		/// </returns>
+		private static bool IsAjaxRequest(HttpRequestBase request) {
+			if (request == null) {
+				throw new ArgumentNullException("request");
+			}
+
+			return (request[XRequestedWithHeaderKey] == AjaxRequestHeaderValue ||
+			        request.Headers != null && request.Headers[XRequestedWithHeaderKey] == AjaxRequestHeaderValue);
+		}
 
 		/// <summary>
 		/// Tests the given request to see if it matches the specified mode.

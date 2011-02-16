@@ -27,6 +27,7 @@
 			<xs:attribute name="baseInsecureUri" type="xs:anyURI" />
 			<xs:attribute name="baseSecureUri" type="xs:anyURI" />
 			<xs:attribute name="bypassSecurityWarning" type="DotNetBoolean" />
+			<xs:attribute name="ignoreAjaxRequests" type="DotNetBoolean" />
 			<xs:attribute name="ignoreSystemHandlers" type="DotNetBoolean" />
 			<xs:attribute name="mode" type="Mode" />
 		</xs:complexType>
