@@ -54,7 +54,7 @@ namespace SecuritySwitch.Configuration {
 		/// <value>
 		///   <c>true</c> if AJAX requests should be ignored; otherwise, <c>false</c>.
 		/// </value>
-		[ConfigurationProperty(ElementNames.IgnoreAjaxRequests)]
+		[ConfigurationProperty(ElementNames.IgnoreAjaxRequests, DefaultValue = false)]
 		public bool IgnoreAjaxRequests {
 			get { return (bool)this[ElementNames.IgnoreAjaxRequests]; }
 			set { this[ElementNames.IgnoreAjaxRequests] = value; }

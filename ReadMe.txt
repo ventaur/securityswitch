@@ -73,6 +73,7 @@ Attribute Name          Data Type   Default Value   Allowed Values
 baseInsecureUri         string      [null]          any valid URI
 baseSecureUri           string      [null]          any valid URI
 bypassSecurityWarning   bool        false           true, false
+ignoreAjaxRequests      bool        false           true, false
 ignoreSystemHandlers    bool        true            true, false
 mode                    Mode        On              On, RemoteOnly, LocalOnly, Off
 
@@ -83,6 +84,8 @@ Likewise, set baseInsecureUri to a valid URI when you have supplied a value for 
 If either baseSecureUri or baseInsecureUri are set, you must provide both values. The module needs to know how to switch back when necessary and will use the other base URI to accomplish that.
 
 Set bypassSecurityWarning to true when you wish to attempt to avoid browser warnings about switching from HTTPS to HTTP. Many browsers alert visitors when a server issues a redirect request that would remove the user from HTTPS. This is not necessarily a bad feature in browsers. However, some website owners/developers wish to avoid such security warnings when possible. When bypassSecurityWarning is true, the module will forgo the usual practice of issuing a formal redirect and, instead, will output a "Refresh" header followed by some JavaScript to change the visitor's location. A refresh header is not a standard HTTP header. However, many browsers do honor it and "refresh" the current location with the specified URL after a timeout. The module sets the URL to the appropriate redirect location with a timeout of 0 (immediately). In addition, a small JavaScript block is output to the browser as backup. If the browser does not honor the refresh header, the script will set the window's location to the appropriate URL.
+
+Setting ignoreAjaxRequests to true will have the module ignore all AJAX requests, regardless of the request's path. When true, this setting overrides any matching path's settings if the request is made via AJAX. If false, the module will process the request like all others by checking for any matching path.
 
 When ignoreSystemHandlers is true (the default), the module will automatically add a special path that will effectively ensure that requests for .axd handlers will be ignored during processing. This is most likely desireable, because ASP.NET makes ample use of the WebResource.axd handler. Likewise, Trace.axd and any other handler with the .axd extension will be ignored when this module evaluates the need to redirect the request. This will avoid browser warnings about mixed security, which occurs when a page is requested via one protocol (i.e. HTTPS) and resources referenced by the page are requested via a different protocol (i.e. HTTP). Without this setting, when a request for WebResource.axd is made via HTTPS on a secure page, the module would see that no path entry matching the request is found. Therefore, the module would redirect the request to use HTTP, causing the mixed security alert. Note, you can disable this setting and manually add path entries for WebResource.axd and any others you specifically want the module to ignore.
 
