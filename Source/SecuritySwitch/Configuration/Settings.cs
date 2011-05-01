@@ -89,18 +89,27 @@ namespace SecuritySwitch.Configuration {
 			get { return (PathSettingCollection)this[ElementNames.Paths]; }
 		}
 
-		
-		/// <summary>
-		/// This property is for internal use and is not meant to be set.
-		/// </summary>
-		[ConfigurationProperty(ElementNames.XmlNamespace)]
-		protected string XmlNamespace {
-			get { return (string)this[ElementNames.XmlNamespace]; }
-			set { this[ElementNames.XmlNamespace] = value; }
-		}
-
 		#endregion
 
+		/// <summary>
+		/// Overriden to ignore namespace-related attributes.
+		/// </summary>
+		/// <param name="name">The name of the unrecognized attribute.</param>
+		/// <param name="value">The value of the unrecognized attribute.</param>
+		/// <returns>
+		/// true when an unknown attribute is encountered while deserializing; otherwise, false.
+		/// </returns>
+		protected override bool OnDeserializeUnrecognizedAttribute(string name, string value) {
+			if (name.IndexOf(':') > 0 || name.StartsWith("xmlns")) {
+				return true;
+			}
+
+			return base.OnDeserializeUnrecognizedAttribute(name, value);
+		}
+
+		/// <summary>
+		/// Called after deserialization for special validation, app-path resolution, and to setup any system handler ignore settings.
+		/// </summary>
 		protected override void PostDeserialize() {
 			base.PostDeserialize();
 

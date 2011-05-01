@@ -18,8 +18,7 @@ namespace SecuritySwitch.Configuration {
 		internal const string IgnoreSystemHandlers = "ignoreSystemHandlers";
 		internal const string Mode = "mode";
 		internal const string Paths = "paths";
-		internal const string XmlNamespace = "xmlns";
-
+		
 		internal const string IgnoreCase = "ignoreCase";
 		internal const string MatchType = "matchType";
 		internal const string Path = "path";

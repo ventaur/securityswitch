@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<configuration>
+	<configSections>
+		<section name="securitySwitch" type="SecuritySwitch.Configuration.Settings, SecuritySwitch" requirePermission="false" />
+	</configSections>
+	<securitySwitch mode="RemoteOnly"
+					xmlns="http://SecuritySwitch-v4.xsd"
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:noNamespaceSchemaLocation="SecuritySwitch-v4.xsd">
+		<paths>
+			<!-- You should only need one of these paths based on where your login/logon page/view is accessed from. -->
+			<add path="~/Login.aspx" />
+			<add path="~/Account/Login.aspx" />
+			<add path="~/Account/LogOn/" />
+		</paths>
+	</securitySwitch>
+	<system.web>
+		<httpModules>
+			<add name="SecuritySwitch" type="SecuritySwitch.SecuritySwitchModule, SecuritySwitch" />
+		</httpModules>
+	</system.web>
+	<system.webServer>
+		<validation validateIntegratedModeConfiguration="false" />
+		<modules>
+			<add name="SecuritySwitch" type="SecuritySwitch.SecuritySwitchModule, SecuritySwitch" />
+		</modules>
+	</system.webServer>
+</configuration>

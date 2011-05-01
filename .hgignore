@@ -1,1 +1,5 @@
 glob:Downloads/*
+syntax: glob
+NuGet/content/SecuritySwitch-v4.xsd
+NuGet/lib/*
+NuGet/*.nupkg
