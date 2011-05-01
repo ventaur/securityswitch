@@ -1,5 +1,6 @@
 glob:Downloads/*
 syntax: glob
+Deploy/*
 NuGet/content/SecuritySwitch-v4.xsd
 NuGet/lib/*
 NuGet/*.nupkg

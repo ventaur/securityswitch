@@ -50,6 +50,7 @@ namespace SecuritySwitch {
 			//   The Framework uses RewritePath when the HttpContext is created to strip the Session ID from the request's 
 			//   Path/Url. The rewritten URL is actually stored in an internal field of HttpRequest; short of reflection, 
 			//   it's not obtainable.
+			// WARNING: Do not access the Form collection of the HttpRequest object to avoid weird issues with post-backs from the application root.
 			context.AcquireRequestState += ProcessRequest;
 		}
 
