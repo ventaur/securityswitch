@@ -7,6 +7,7 @@
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
 using System;
+using System.Collections.Specialized;
 
 using Moq;
 
@@ -20,12 +21,13 @@ using Xunit;
 namespace SecuritySwitch.Tests.Evaluation {
 	public class SecurityEnforcerTests {
 		[Fact]
-		public void GetUriReuestReturnsNullIfRequestSecurityAlreadyMatchesSpecifiedSecurity() {
+		public void GetUriRequestReturnsNullIfRequestSecurityAlreadyMatchesSpecifiedSecurity() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
 			var mockResponse = new Mock<HttpResponseBase>();
 			var settings = new Settings();
-			var enforcer = new SecurityEnforcer();
+			var evaluator = new SecurityEvaluator();
+			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
 			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(true);
@@ -39,6 +41,42 @@ namespace SecuritySwitch.Tests.Evaluation {
 			                                                                                  mockResponse.Object,
 			                                                                                  RequestSecurity.Insecure,
 			                                                                                  settings);
+
+
+			// Assert.
+			Assert.Null(targetUrlForAlreadySecuredRequest);
+			Assert.Null(targetUrlForAlreadyInsecureRequest);
+		}
+
+		[Fact]
+		public void GetUriRequestReturnsNullIfOffloadedHeaderSecurityAlreadyMatchesSpecifiedSecurity() {
+			// Arrange.
+			var mockRequest = new Mock<HttpRequestBase>();
+			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(false);
+
+			var mockResponse = new Mock<HttpResponseBase>();
+			var settings = new Settings();
+			var evaluator = new SecurityEvaluator();
+			var enforcer = new SecurityEnforcer(evaluator);
+
+			// Act.
+			mockRequest.SetupGet(req => req.Headers).Returns(new NameValueCollection {
+				{ "SSL_REQUEST", "on" },
+				{ "OTHER_HEADER", "some-value" }
+			});
+			settings.OffloadedSecurityHeaders = "SSL_REQUEST=";
+			var targetUrlForAlreadySecuredRequest = enforcer.GetUriForMatchedSecurityRequest(mockRequest.Object,
+																							 mockResponse.Object,
+																							 RequestSecurity.Secure,
+																							 settings);
+
+			mockRequest.SetupGet(req => req.Headers).Returns(new NameValueCollection {
+				{ "OTHER_HEADER", "some-value" }
+			});
+			var targetUrlForAlreadyInsecureRequest = enforcer.GetUriForMatchedSecurityRequest(mockRequest.Object,
+																							  mockResponse.Object,
+																							  RequestSecurity.Insecure,
+																							  settings);
 
 
 			// Assert.
@@ -65,7 +103,8 @@ namespace SecuritySwitch.Tests.Evaluation {
 					new TestPathSetting("/Manage")
 				}
 			};
-			var enforcer = new SecurityEnforcer();
+			var evaluator = new SecurityEvaluator();
+			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
 			var targetUrl = enforcer.GetUriForMatchedSecurityRequest(mockRequest.Object,
@@ -95,7 +134,8 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Mode = Mode.On,
 				BaseSecureUri = "https://secure.someotherwebsite.com/testsite/"
 			};
-			var enforcer = new SecurityEnforcer();
+			var evaluator = new SecurityEvaluator();
+			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
 			var targetUrl = enforcer.GetUriForMatchedSecurityRequest(mockRequest.Object,
@@ -126,7 +166,8 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Mode = Mode.On,
 				BaseInsecureUri = "http://www.someotherwebsite.com/"
 			};
-			var enforcer = new SecurityEnforcer();
+			var evaluator = new SecurityEvaluator();
+			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
 			var targetUrl = enforcer.GetUriForMatchedSecurityRequest(mockRequest.Object,
@@ -157,7 +198,8 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Mode = Mode.On,
 				BaseSecureUri = "https://secure.someotherwebsite.com/testsite/"
 			};
-			var enforcer = new SecurityEnforcer();
+			var evaluator = new SecurityEvaluator();
+			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
 			var targetUrl = enforcer.GetUriForMatchedSecurityRequest(mockRequest.Object,

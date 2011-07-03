@@ -82,6 +82,17 @@ namespace SecuritySwitch.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets any request headers (and optional values) that indicate if the request is secure. This is often used when 
+		/// security (SSL) is offloaded to another server (e.g., ISA Server). This property's value should mimic a query string 
+		/// (without the leading '?').
+		/// </summary>
+		[ConfigurationProperty(ElementNames.OffloadedSecurityHeaders), RegexStringValidator(@"^([^?=&]+)(=([^&]*))(&[^?=&]+)(=([^&]*))*|$")]
+		public string OffloadedSecurityHeaders {
+			get { return (string)this[ElementNames.OffloadedSecurityHeaders]; }
+			set { this[ElementNames.OffloadedSecurityHeaders] = (!string.IsNullOrEmpty(value) ? value : null); }
+		}
+
+		/// <summary>
 		/// Gets the collection of path settings read from the configuration section.
 		/// </summary>
 		[ConfigurationProperty(ElementNames.Paths, IsDefaultCollection = true, IsRequired = true)]

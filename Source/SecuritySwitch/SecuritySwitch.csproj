@@ -53,6 +53,9 @@
     <Compile Include="Configuration\Enums.cs" />
     <Compile Include="Configuration\Settings.cs" />
     <Compile Include="BeforeEvaluateRequestEventArgs.cs" />
+    <Compile Include="Evaluation\ISecurityEvaluator.cs" />
+    <Compile Include="Evaluation\SecurityEvaluator.cs" />
+    <Compile Include="Evaluation\SecurityEvaluatorFactory.cs" />
     <Compile Include="Redirection\ILocationRedirector.cs" />
     <Compile Include="Redirection\LocationRedirector.cs" />
     <Compile Include="Redirection\LocationRedirectorFactory.cs" />

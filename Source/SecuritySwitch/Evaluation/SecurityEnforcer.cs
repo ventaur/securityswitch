@@ -18,6 +18,16 @@ namespace SecuritySwitch.Evaluation {
 	/// The default implementation of ISecurityEnforcer.
 	/// </summary>
 	public class SecurityEnforcer : ISecurityEnforcer {
+		private readonly ISecurityEvaluator _securityEvaluator;
+
+		public SecurityEnforcer(ISecurityEvaluator securityEvaluator) {
+			if (securityEvaluator == null) {
+				throw new ArgumentNullException("securityEvaluator");
+			}
+
+			_securityEvaluator = securityEvaluator;
+		}
+
 		/// <summary>
 		/// Gets any URI for the specified request that ensures it is being accessed by the proper protocol, if a match is found in the settings.
 		/// </summary>
@@ -28,8 +38,11 @@ namespace SecuritySwitch.Evaluation {
 		/// <returns>A URL that ensures the requested resources matches the specified security; or null if the current request already does.</returns>
 		public string GetUriForMatchedSecurityRequest(HttpRequestBase request, HttpResponseBase response, RequestSecurity security, Settings settings) {
 			string targetUrl = null;
+			
+			// Evaluate the request's security.
+			var isSecureConnection = _securityEvaluator.IsSecureConnection(request, settings);
 
-			if (security == RequestSecurity.Secure && !request.IsSecureConnection || security == RequestSecurity.Insecure && request.IsSecureConnection) {
+			if (security == RequestSecurity.Secure && !isSecureConnection || security == RequestSecurity.Insecure && isSecureConnection) {
 				// Determine the target protocol and get any base target URL from the settings.
 				string targetProtocolScheme;
 				string baseTargetUrl;
@@ -48,7 +61,7 @@ namespace SecuritySwitch.Evaluation {
 				} else {
 					// Build the appropriate URI based on the specified target URL.
 					var uri = new StringBuilder(baseTargetUrl);
-					
+
 					// - Use the full request path, but remove any sub-application path.
 					uri.Append(request.RawUrl);
 					if (request.ApplicationPath.Length > 1) {

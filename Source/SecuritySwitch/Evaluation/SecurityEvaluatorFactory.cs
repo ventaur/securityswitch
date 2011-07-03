@@ -8,15 +8,15 @@
 // =================================================================================
 namespace SecuritySwitch.Evaluation {
 	/// <summary>
-	/// A factory for ISecurityEnforcer.
+	/// A factory for ISecurityEvaluator.
 	/// </summary>
-	internal static class SecurityEnforcerFactory {
+	internal class SecurityEvaluatorFactory {
 		/// <summary>
-		/// Gets a security enforcer.
+		/// Gets a security evaluator.
 		/// </summary>
 		/// <returns></returns>
-		internal static ISecurityEnforcer Create(ISecurityEvaluator securityEvaluator) {
-			return new SecurityEnforcer(securityEvaluator);
+		internal static ISecurityEvaluator Create() {
+			return new SecurityEvaluator();
 		}
 	}
 }

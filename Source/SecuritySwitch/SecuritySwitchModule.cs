@@ -85,16 +85,17 @@ namespace SecuritySwitch {
 			HttpResponseBase wrappedResponse = new HttpResponseWrapper(context.Response);
 
 			// Evaluate this request with the configured settings.
-			var evaluator = RequestEvaluatorFactory.Create();
-			var expectedSecurity = evaluator.Evaluate(wrappedRequest, _settings);
+			var requestEvaluator = RequestEvaluatorFactory.Create();
+			var expectedSecurity = requestEvaluator.Evaluate(wrappedRequest, _settings);
 			if (expectedSecurity == RequestSecurity.Ignore) {
 				// No action is needed for a result of Ignore.
 				return;
 			}
 
 			// Ensure the request matches the expected security.
-			var enforcer = SecurityEnforcerFactory.Create();
-			var targetUrl = enforcer.GetUriForMatchedSecurityRequest(wrappedRequest, wrappedResponse, expectedSecurity, _settings);
+			var securityEvaluator = SecurityEvaluatorFactory.Create();
+			var securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
+			var targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(wrappedRequest, wrappedResponse, expectedSecurity, _settings);
 			if (string.IsNullOrEmpty(targetUrl)) {
 				// No action is needed if the security enforcer did not return a target URL.
 				return;
