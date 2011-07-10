@@ -44,9 +44,9 @@ namespace SecuritySwitch.Abstractions {
 			get { return _httpRequest.AppRelativeCurrentExecutionFilePath; }
 		}
 
-		//public override HttpBrowserCapabilitiesBase Browser {
-		//    get { return new HttpBrowserCapabilitiesWrapper(_httpRequest.Browser); }
-		//}
+		public override HttpBrowserCapabilitiesBase Browser {
+			get { return new HttpBrowserCapabilitiesWrapper(_httpRequest.Browser); }
+		}
 
 		public override HttpClientCertificate ClientCertificate {
 			get { return _httpRequest.ClientCertificate; }
@@ -78,9 +78,9 @@ namespace SecuritySwitch.Abstractions {
 			get { return _httpRequest.FilePath; }
 		}
 
-		//public override HttpFileCollectionBase Files {
-		//    get { return new System.Web.HttpFileCollectionWrapper(_httpRequest.Files); }
-		//}
+		public override HttpFileCollectionBase Files {
+			get { return new HttpFileCollectionWrapper(_httpRequest.Files); }
+		}
 
 		public override Stream Filter {
 			get { return _httpRequest.Filter; }

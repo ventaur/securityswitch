@@ -9,14 +9,20 @@
 using System;
 using System.Collections.Specialized;
 using System.IO;
-using System.Security.Permissions;
 using System.Web;
 
 
 namespace SecuritySwitch.Abstractions {
-	[AspNetHostingPermission(SecurityAction.LinkDemand, Level = AspNetHostingPermissionLevel.Minimal),
-	 AspNetHostingPermission(SecurityAction.InheritanceDemand, Level = AspNetHostingPermissionLevel.Minimal)]
 	public abstract class HttpServerUtilityBase {
+		public virtual string MachineName {
+			get { throw new NotImplementedException(); }
+		}
+
+		public virtual int ScriptTimeout {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
 		public virtual void ClearError() {
 			throw new NotImplementedException();
 		}
@@ -127,15 +133,6 @@ namespace SecuritySwitch.Abstractions {
 
 		public virtual string UrlTokenEncode(byte[] input) {
 			throw new NotImplementedException();
-		}
-
-		public virtual string MachineName {
-			get { throw new NotImplementedException(); }
-		}
-
-		public virtual int ScriptTimeout {
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
 		}
 	}
 }

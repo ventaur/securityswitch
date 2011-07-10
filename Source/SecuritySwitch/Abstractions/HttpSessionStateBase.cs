@@ -9,47 +9,12 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Security.Permissions;
 using System.Web;
 using System.Web.SessionState;
 
 
 namespace SecuritySwitch.Abstractions {
-	[AspNetHostingPermission(SecurityAction.LinkDemand, Level = AspNetHostingPermissionLevel.Minimal),
-	 AspNetHostingPermission(SecurityAction.InheritanceDemand, Level = AspNetHostingPermissionLevel.Minimal)]
 	public abstract class HttpSessionStateBase : ICollection {
-		public virtual void Abandon() {
-			throw new NotImplementedException();
-		}
-
-		public virtual void Add(string name, object value) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void Clear() {
-			throw new NotImplementedException();
-		}
-
-		public virtual void CopyTo(Array array, int index) {
-			throw new NotImplementedException();
-		}
-
-		public virtual IEnumerator GetEnumerator() {
-			throw new NotImplementedException();
-		}
-
-		public virtual void Remove(string name) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void RemoveAll() {
-			throw new NotImplementedException();
-		}
-
-		public virtual void RemoveAt(int index) {
-			throw new NotImplementedException();
-		}
-
 		public virtual int CodePage {
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
@@ -121,6 +86,39 @@ namespace SecuritySwitch.Abstractions {
 		public virtual int Timeout {
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
+		}
+
+
+		public virtual void Abandon() {
+			throw new NotImplementedException();
+		}
+
+		public virtual void Add(string name, object value) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void Clear() {
+			throw new NotImplementedException();
+		}
+
+		public virtual void CopyTo(Array array, int index) {
+			throw new NotImplementedException();
+		}
+
+		public virtual IEnumerator GetEnumerator() {
+			throw new NotImplementedException();
+		}
+
+		public virtual void Remove(string name) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RemoveAll() {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RemoveAt(int index) {
+			throw new NotImplementedException();
 		}
 	}
 }

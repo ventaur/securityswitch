@@ -69,7 +69,7 @@ namespace SecuritySwitch.Evaluation {
 			// * Avoid accessing HttpRequestBase.Form at this point. There is a weird issue that forces the Framework to ignore the target of a
 			//   post-back if you access the Form collection during a request to the root of the application (i.e. http://mydomain.com/).
 			//   This issue does not appear if an actual page name is used in the URL (i.e. http://mydomain.com/Default.aspx).
-			return (request.QueryString[XRequestedWithHeaderKey] == AjaxRequestHeaderValue ||
+			return (request.QueryString != null && request.QueryString[XRequestedWithHeaderKey] == AjaxRequestHeaderValue ||
 			        request.Headers != null && request.Headers[XRequestedWithHeaderKey] == AjaxRequestHeaderValue);
 		}
 

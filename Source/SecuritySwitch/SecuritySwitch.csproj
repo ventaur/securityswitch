@@ -38,21 +38,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\HttpApplicationStateBase.cs" />
+    <Compile Include="Abstractions\HttpApplicationStateWrapper.cs" />
     <Compile Include="Abstractions\HttpBrowserCapabilitiesBase.cs" />
+    <Compile Include="Abstractions\HttpBrowserCapabilitiesWrapper.cs" />
     <Compile Include="Abstractions\HttpCachePolicyBase.cs" />
+    <Compile Include="Abstractions\HttpCachePolicyWrapper.cs" />
+    <Compile Include="Abstractions\HttpContextBase.cs" />
+    <Compile Include="Abstractions\HttpContextWrapper.cs" />
     <Compile Include="Abstractions\HttpFileCollectionBase.cs" />
+    <Compile Include="Abstractions\HttpFileCollectionWrapper.cs" />
     <Compile Include="Abstractions\HttpPostedFileBase.cs" />
+    <Compile Include="Abstractions\HttpPostedFileWrapper.cs" />
     <Compile Include="Abstractions\HttpRequestBase.cs" />
     <Compile Include="Abstractions\HttpRequestWrapper.cs" />
     <Compile Include="Abstractions\HttpResponseBase.cs" />
     <Compile Include="Abstractions\HttpResponseWrapper.cs" />
+    <Compile Include="Abstractions\HttpServerUtilityBase.cs" />
+    <Compile Include="Abstractions\HttpServerUtilityWrapper.cs" />
+    <Compile Include="Abstractions\HttpSessionStateBase.cs" />
+    <Compile Include="Abstractions\HttpSessionStateWrapper.cs" />
     <Compile Include="Abstractions\HttpStaticObjectsCollectionBase.cs" />
+    <Compile Include="Abstractions\HttpStaticObjectsCollectionWrapper.cs" />
     <Compile Include="Configuration\ElementNames.cs" />
     <Compile Include="Configuration\PathSetting.cs" />
     <Compile Include="Configuration\PathSettingCollection.cs" />
     <Compile Include="Configuration\Enums.cs" />
     <Compile Include="Configuration\Settings.cs" />
-    <Compile Include="BeforeEvaluateRequestEventArgs.cs" />
+    <Compile Include="EvaluateRequestEventArgs.cs" />
     <Compile Include="Evaluation\ISecurityEvaluator.cs" />
     <Compile Include="Evaluation\SecurityEvaluator.cs" />
     <Compile Include="Evaluation\SecurityEvaluatorFactory.cs" />

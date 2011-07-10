@@ -7,6 +7,8 @@
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
 
+using System.Collections.Specialized;
+
 using Moq;
 
 using SecuritySwitch.Abstractions;
@@ -156,8 +158,10 @@ namespace SecuritySwitch.Tests.Evaluation {
 			// Act.
 			var resultForNonAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
-			mockRequest.Setup(req => req[RequestEvaluator.XRequestedWithHeaderKey])
-				.Returns(RequestEvaluator.AjaxRequestHeaderValue);
+			var queryString = new NameValueCollection {
+				{ RequestEvaluator.XRequestedWithHeaderKey, RequestEvaluator.AjaxRequestHeaderValue }
+			};
+			mockRequest.Setup(req => req.QueryString).Returns(queryString);
 			var resultForAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
 			_fixture.Settings.IgnoreAjaxRequests = false;

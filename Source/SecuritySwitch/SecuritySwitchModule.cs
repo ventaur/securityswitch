@@ -67,26 +67,38 @@ namespace SecuritySwitch {
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void ProcessRequest(object sender, EventArgs e) {
 			// Cast the source as an HttpApplication instance.
-			var context = sender as HttpApplication;
-			if (context == null) {
+			var application = sender as HttpApplication;
+			if (application == null) {
 				return;
 			}
 
-			// Raise the BeforeEvaluateRequest event and check if a subscriber indicated to cancel the 
-			// evaluation of the current request.
-			var eventArgs = new BeforeEvaluateRequestEventArgs(context, _settings);
-			InvokeBeforeEvaluateRequest(eventArgs);
-			if (eventArgs.CancelEvaluation) {
-				return;
+			// Wrap the application's context (for testability) and process it.
+			var context = new HttpContextWrapper(application.Context);
+			ProcessRequest(context);
+		}
+
+		/// <summary>
+		/// Processes the request.
+		/// </summary>
+		/// <param name="context">The context in which the request to process is running.</param>
+		protected void ProcessRequest(HttpContextBase context) {
+			var request = context.Request;
+			var response = context.Response;
+
+			// Raise the EvaluateRequest event and check if a subscriber indicated the security for the current request.
+			var eventArgs = new EvaluateRequestEventArgs(context, _settings);
+			InvokeEvaluateRequest(eventArgs);
+
+			RequestSecurity expectedSecurity;
+			if (eventArgs.ExpectedSecurity.HasValue) {
+				// Use the vlaue returned by the EvaluateRequest event.
+				expectedSecurity = eventArgs.ExpectedSecurity.Value;
+			} else {
+				// Evaluate this request with the configured settings, if necessary.
+				var requestEvaluator = RequestEvaluatorFactory.Create();
+				expectedSecurity = requestEvaluator.Evaluate(request, _settings);
 			}
 
-			// Wrap the current request and response (for testability).
-			HttpRequestBase wrappedRequest = new HttpRequestWrapper(context.Request);
-			HttpResponseBase wrappedResponse = new HttpResponseWrapper(context.Response);
-
-			// Evaluate this request with the configured settings.
-			var requestEvaluator = RequestEvaluatorFactory.Create();
-			var expectedSecurity = requestEvaluator.Evaluate(wrappedRequest, _settings);
 			if (expectedSecurity == RequestSecurity.Ignore) {
 				// No action is needed for a result of Ignore.
 				return;
@@ -95,7 +107,7 @@ namespace SecuritySwitch {
 			// Ensure the request matches the expected security.
 			var securityEvaluator = SecurityEvaluatorFactory.Create();
 			var securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
-			var targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(wrappedRequest, wrappedResponse, expectedSecurity, _settings);
+			var targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
 			if (string.IsNullOrEmpty(targetUrl)) {
 				// No action is needed if the security enforcer did not return a target URL.
 				return;
@@ -103,21 +115,21 @@ namespace SecuritySwitch {
 
 			// Redirect.
 			var redirector = LocationRedirectorFactory.Create();
-			redirector.Redirect(wrappedResponse, targetUrl, _settings.BypassSecurityWarning);
+			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
 		}
 
 
 		/// <summary>
-		/// Occurs just before the SecureSwitchModule evaluates the current request.
+		/// Raised before the SecureSwitchModule evaluates the current request to allow subscribers a chance to evaluate the request.
 		/// </summary>
-		public event BeforeEvaluateRequestEventHandler BeforeEvaluateRequest;
+		public event EvaluateRequestEventHandler EvaluateRequest;
 
 		/// <summary>
-		/// Raises the BeforeEvaluateRequest event.
+		/// Raises the EvaluateRequest event.
 		/// </summary>
-		/// <param name="args">The BeforeEvaluateRequestEventArgs used by any event handler(s).</param>
-		protected void InvokeBeforeEvaluateRequest(BeforeEvaluateRequestEventArgs args) {
-			var handler = BeforeEvaluateRequest;
+		/// <param name="args">The EvaluateRequestEventArgs used by any event handler(s).</param>
+		protected void InvokeEvaluateRequest(EvaluateRequestEventArgs args) {
+			var handler = EvaluateRequest;
 			if (handler != null) {
 				handler(this, args);
 			}
@@ -126,7 +138,7 @@ namespace SecuritySwitch {
 
 
 	/// <summary>
-	/// The delegate for handlers of the BeforeEvaluateRequest event.
+	/// The delegate for handlers of the EvaluateRequest event.
 	/// </summary>
-	public delegate void BeforeEvaluateRequestEventHandler(object sender, BeforeEvaluateRequestEventArgs args);
+	public delegate void EvaluateRequestEventHandler(object sender, EvaluateRequestEventArgs args);
 }

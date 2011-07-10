@@ -39,9 +39,9 @@ namespace SecuritySwitch.Abstractions {
 			set { _httpResponse.BufferOutput = value; }
 		}
 
-		//public override HttpCachePolicyBase Cache {
-		//    get { return new HttpCachePolicyWrapper(_httpResponse.Cache); }
-		//}
+		public override HttpCachePolicyBase Cache {
+			get { return new HttpCachePolicyWrapper(_httpResponse.Cache); }
+		}
 
 		public override string CacheControl {
 			get { return _httpResponse.CacheControl; }

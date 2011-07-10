@@ -9,7 +9,6 @@
 using System;
 using System.Collections;
 using System.Globalization;
-using System.Security.Permissions;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Caching;
@@ -17,57 +16,7 @@ using System.Web.Profile;
 
 
 namespace SecuritySwitch.Abstractions {
-	[AspNetHostingPermission(SecurityAction.LinkDemand, Level = AspNetHostingPermissionLevel.Minimal),
-	 AspNetHostingPermission(SecurityAction.InheritanceDemand, Level = AspNetHostingPermissionLevel.Minimal)]
 	public abstract class HttpContextBase : IServiceProvider {
-		public virtual void AddError(Exception errorInfo) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void ClearError() {
-			throw new NotImplementedException();
-		}
-
-		public virtual object GetGlobalResourceObject(string classKey, string resourceKey) {
-			throw new NotImplementedException();
-		}
-
-		public virtual object GetGlobalResourceObject(string classKey, string resourceKey, CultureInfo culture) {
-			throw new NotImplementedException();
-		}
-
-		public virtual object GetLocalResourceObject(string virtualPath, string resourceKey) {
-			throw new NotImplementedException();
-		}
-
-		public virtual object GetLocalResourceObject(string virtualPath, string resourceKey, CultureInfo culture) {
-			throw new NotImplementedException();
-		}
-
-		public virtual object GetSection(string sectionName) {
-			throw new NotImplementedException();
-		}
-
-		public virtual object GetService(Type serviceType) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void RewritePath(string path) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void RewritePath(string path, bool rebaseClientPath) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void RewritePath(string filePath, string pathInfo, string queryString) {
-			throw new NotImplementedException();
-		}
-
-		public virtual void RewritePath(string filePath, string pathInfo, string queryString, bool setClientFilePath) {
-			throw new NotImplementedException();
-		}
-
 		public virtual Exception[] AllErrors {
 			get { throw new NotImplementedException(); }
 		}
@@ -158,6 +107,58 @@ namespace SecuritySwitch.Abstractions {
 		public virtual IPrincipal User {
 			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
+		}
+
+		public virtual void AddError(Exception errorInfo) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void ClearError() {
+			throw new NotImplementedException();
+		}
+
+		public virtual object GetGlobalResourceObject(string classKey, string resourceKey) {
+			throw new NotImplementedException();
+		}
+
+		public virtual object GetGlobalResourceObject(string classKey, string resourceKey, CultureInfo culture) {
+			throw new NotImplementedException();
+		}
+
+		public virtual object GetLocalResourceObject(string virtualPath, string resourceKey) {
+			throw new NotImplementedException();
+		}
+
+		public virtual object GetLocalResourceObject(string virtualPath, string resourceKey, CultureInfo culture) {
+			throw new NotImplementedException();
+		}
+
+		public virtual object GetSection(string sectionName) {
+			throw new NotImplementedException();
+		}
+
+		public virtual object GetService(Type serviceType) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RemapHandler(IHttpHandler handler) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RewritePath(string path) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RewritePath(string path, bool rebaseClientPath) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RewritePath(string filePath, string pathInfo, string queryString) {
+			throw new NotImplementedException();
+		}
+
+		public virtual void RewritePath(string filePath, string pathInfo, string queryString, bool setClientFilePath) {
+			throw new NotImplementedException();
 		}
 	}
 }
