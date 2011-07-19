@@ -95,7 +95,7 @@ namespace SecuritySwitch.Configuration {
 		/// <summary>
 		/// Gets the collection of path settings read from the configuration section.
 		/// </summary>
-		[ConfigurationProperty(ElementNames.Paths, IsDefaultCollection = true, IsRequired = true)]
+		[ConfigurationProperty(ElementNames.Paths, IsDefaultCollection = true, IsRequired = false)]
 		public PathSettingCollection Paths {
 			get { return (PathSettingCollection)this[ElementNames.Paths]; }
 		}

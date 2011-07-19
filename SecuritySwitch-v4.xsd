@@ -8,7 +8,7 @@
 	<xs:element name="securitySwitch">
 		<xs:complexType>
 			<xs:all minOccurs="0">
-				<xs:element name="paths" minOccurs="1">
+				<xs:element name="paths" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence minOccurs="1" maxOccurs="unbounded">
 							<xs:element name="add">
@@ -30,6 +30,7 @@
 			<xs:attribute name="ignoreAjaxRequests" type="DotNetBoolean" />
 			<xs:attribute name="ignoreSystemHandlers" type="DotNetBoolean" />
 			<xs:attribute name="mode" type="Mode" />
+			<xs:attribute name="offloadedSecurityHeaders" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 
