@@ -142,7 +142,7 @@ Be sure to either include the SecuritySwitch-v4.xsd file in your solution, or (b
 	* for 32-bit systems: %ProgramFiles%\Microsoft Visual Studio [version]\Xml\Schemas
 	* for 64-bit systems: %ProgramFiles(x86)%\Microsoft Visual Studio [version]\Xml\Schemas
 
-Dyanmic Evaluation of Requests
+Dynamic Evaluation of Requests
 ------------------------------
 There may be times when you cannot configure the paths that need to be secured, because your application generates URLs/paths dynamically. This is especially true for Content Management Systems (CMS). In those cases, you can leave out the paths element from the configuration section and provide an event handler for the module's EvaluateRequest event. To do this, add an event handler to your site's Global.asax file named, "SecuritySwitch_EvaluateRequest" with the following signature:
 
