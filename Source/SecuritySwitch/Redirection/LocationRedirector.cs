@@ -6,7 +6,6 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-using System.Web;
 
 using SecuritySwitch.Abstractions;
 
@@ -28,13 +27,13 @@ namespace SecuritySwitch.Redirection {
 				response.Clear();
 
 				// Add a refresh header to the response for the new path.
-				response.AddHeader("Refresh", "0;URL=" + HttpUtility.HtmlAttributeEncode(url));
+				response.AddHeader("Refresh", "0;URL=" + url);
 
 				// Also, add JavaScript to replace the current location as backup.
 				response.Write("<html><head><title></title>");
-				response.Write("<!-- <script language=\"javascript\">window.location.replace(\"");
-				response.Write(HttpUtility.HtmlEncode(url));
-				response.Write("\");</script> -->");
+				response.Write("<script language=\"javascript\">window.location = '");
+				response.Write(url);
+				response.Write("';</script>");
 				response.Write("</head><body></body></html>");
 			} else {
 				// Permanent redirect.

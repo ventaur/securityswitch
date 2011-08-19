@@ -7,6 +7,8 @@
 // been issued by an officer of the company.
 // =================================================================================
 
+using System.Web;
+
 using Moq;
 
 using SecuritySwitch.Abstractions;
@@ -34,9 +36,9 @@ namespace SecuritySwitch.Tests.Redirection {
 		}
 
 		[Fact]
-		public void RedirectWithBypassSecurityWarningAddsRefreshHeaderAndWritesJavascript() {
+		public void RedirectWithBypassSecurityWarningAddsCorrectRefreshHeader() {
 			// Arrange.
-			const string RedirectUrl = "https://www.somewebsite.com/admin/protected-content/";
+			const string RedirectUrl = "https://www.somewebsite.com/admin/protected-content/?testVar=Value1&another=value-2";
 			var mockResponse = new Mock<HttpResponseBase>();
 			var redirector = new LocationRedirector();
 
@@ -45,7 +47,21 @@ namespace SecuritySwitch.Tests.Redirection {
 
 			// Assert.
 			mockResponse.Verify(resp => resp.AddHeader("Refresh", "0;URL=" + RedirectUrl));
-			mockResponse.Verify(resp => resp.Write(It.Is<string>(s => s.Contains("window.location.replace"))));
+		}
+
+		[Fact]
+		public void RedirectWithBypassSecurityWarningWritesJavascriptLocationUrl() {
+			// Arrange.
+			const string RedirectUrl = "https://www.somewebsite.com/admin/protected-content/?testVar=Value1&another=value-2";
+			var mockResponse = new Mock<HttpResponseBase>();
+			var redirector = new LocationRedirector();
+
+			// Act.
+			redirector.Redirect(mockResponse.Object, RedirectUrl, true);
+
+			// Assert.
+			mockResponse.Verify(resp => resp.Write(It.Is<string>(s => s.Contains("window.location"))));
+			mockResponse.Verify(resp => resp.Write(It.Is<string>(s => s.Contains(RedirectUrl))));
 		}
 	}
 }
