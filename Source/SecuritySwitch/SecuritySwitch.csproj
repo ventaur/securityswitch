@@ -135,13 +135,13 @@
 
 		<!-- Create NuGet package with the latest version. -->
 		<PropertyGroup>
-			<NuGetDir>$(SolutionDir)NuGet\</NuGetDir>
-			<NuSpecFile>$(NuGetDir)$(AssemblyName).nuspec</NuSpecFile>
+			<NuGetDir>$(SolutionDir)NuGet</NuGetDir>
+			<NuSpecFile>$(NuGetDir)\$(AssemblyName).nuspec</NuSpecFile>
 		</PropertyGroup>
-		<Copy SourceFiles="@(NuGetContentFiles)" DestinationFolder="$(NuGetDir)content\" SkipUnchangedFiles="true" />
-		<Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(NuGetDir)lib\" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="@(NuGetContentFiles)" DestinationFolder="$(NuGetDir)\content\" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(NuGetDir)\lib\" SkipUnchangedFiles="true" />
 		<XmlPoke XmlInputPath="$(NuSpecFile)" Query="//x:package/x:metadata/x:version" Value="%(AssemblyInfo.Version)" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd' /&gt;" />
-		<Exec Command="nuget pack $(NuSpecFile) -OutputDirectory $(NuGetDir)" />
+		<Exec Command="nuget pack &quot;$(NuSpecFile)&quot; -OutputDirectory &quot;$(NuGetDir)&quot;" />
 	</Target>
 	<Target Name="CreateDownloadArchive">
 		<GetAssemblyIdentity AssemblyFiles="$(OutDir)$(TargetFileName)">

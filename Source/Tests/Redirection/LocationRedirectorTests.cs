@@ -7,8 +7,6 @@
 // been issued by an officer of the company.
 // =================================================================================
 
-using System.Web;
-
 using Moq;
 
 using SecuritySwitch.Abstractions;
