@@ -105,7 +105,7 @@ namespace SecuritySwitch {
 			}
 
 			// Ensure the request matches the expected security.
-			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create();
+			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
 			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
 			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
 			if (string.IsNullOrEmpty(targetUrl)) {

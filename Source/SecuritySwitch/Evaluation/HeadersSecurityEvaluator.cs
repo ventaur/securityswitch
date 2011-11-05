@@ -17,9 +17,9 @@ using SecuritySwitch.Configuration;
 
 namespace SecuritySwitch.Evaluation {
 	/// <summary>
-	/// The default implementation of ISecurityEvaluator.
+	/// A security evaluator that looks for the presence of, or an expected value match with, one or more headers.
 	/// </summary>
-	public class SecurityEvaluator : ISecurityEvaluator {
+	public class HeadersSecurityEvaluator : ISecurityEvaluator {
 		/// <summary>
 		/// Determines whether the specified request is over a secure connection.
 		/// </summary>
@@ -29,11 +29,6 @@ namespace SecuritySwitch.Evaluation {
 		///   <c>true</c> if the specified request is over a secure connection; otherwise, <c>false</c>.
 		/// </returns>
 		public bool IsSecureConnection(HttpRequestBase request, Settings settings) {
-			// If there are no headers, or no headers are expected, look to the request.
-			if (request.Headers == null || string.IsNullOrEmpty(settings.OffloadedSecurityHeaders)) {
-				return request.IsSecureConnection;
-			}
-
 			// Parse the expected security headers and check for each.
 			NameValueCollection expectedSecurityHeaders = HttpUtility.ParseQueryString(settings.OffloadedSecurityHeaders);
 			foreach (string name in expectedSecurityHeaders.AllKeys) {
@@ -42,8 +37,10 @@ namespace SecuritySwitch.Evaluation {
 					continue;
 				}
 
-				// If the header exists, but no value is expected OR if the expected value matches the header's value, indicated a secure connection.
-				if (string.IsNullOrEmpty(expectedSecurityHeaders[name]) || string.Equals(expectedSecurityHeaders[name], request.Headers[name], StringComparison.OrdinalIgnoreCase)) {
+				// If the header exists, but no value is expected OR if the expected value matches the header's value, 
+				// indicated a secure connection.
+				if (string.IsNullOrEmpty(expectedSecurityHeaders[name]) ||
+				    string.Equals(expectedSecurityHeaders[name], request.Headers[name], StringComparison.OrdinalIgnoreCase)) {
 					return true;
 				}
 			}

@@ -42,11 +42,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Evaluation\PortSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\RegexPathMatcherTests.cs" />
     <Compile Include="Evaluation\RequestEvaluatorTestFixture.cs" />
     <Compile Include="Evaluation\RequestEvaluatorTests.cs" />
     <Compile Include="Evaluation\SecurityEnforcerTests.cs" />
-    <Compile Include="Evaluation\SecurityEvaluatorTests.cs" />
+    <Compile Include="Evaluation\HeadersSecurityEvaluatorTests.cs" />
+    <Compile Include="Evaluation\StandardSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\StartsWithPathMatcherTests.cs" />
     <Compile Include="Evaluation\ExactPathMatcherTests.cs" />
     <Compile Include="SecuritySwitchModuleTests.cs" />

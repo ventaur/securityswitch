@@ -1,4 +1,4 @@
-// =================================================================================
+﻿// =================================================================================
 // Copyright © 2004-2011 Matt Sollars
 // All rights reserved.
 // 
@@ -26,7 +26,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var mockRequest = new Mock<HttpRequestBase>();
 			var mockResponse = new Mock<HttpResponseBase>();
 			var settings = new Settings();
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new StandardSecurityEvaluator();
 			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
@@ -56,7 +56,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 
 			var mockResponse = new Mock<HttpResponseBase>();
 			var settings = new Settings();
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new HeadersSecurityEvaluator();
 			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
@@ -103,7 +103,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 					new TestPathSetting("/Manage")
 				}
 			};
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new HeadersSecurityEvaluator();
 			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
@@ -134,7 +134,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Mode = Mode.On,
 				BaseSecureUri = "https://secure.someotherwebsite.com/testsite/"
 			};
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new HeadersSecurityEvaluator();
 			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
@@ -166,7 +166,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Mode = Mode.On,
 				BaseInsecureUri = "http://www.someotherwebsite.com/"
 			};
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new StandardSecurityEvaluator();
 			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.
@@ -198,7 +198,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Mode = Mode.On,
 				BaseSecureUri = "https://secure.someotherwebsite.com/testsite/"
 			};
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new HeadersSecurityEvaluator();
 			var enforcer = new SecurityEnforcer(evaluator);
 
 			// Act.

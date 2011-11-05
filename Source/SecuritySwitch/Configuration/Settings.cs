@@ -100,6 +100,16 @@ namespace SecuritySwitch.Configuration {
 			get { return (PathSettingCollection)this[ElementNames.Paths]; }
 		}
 
+		/// <summary>
+		/// Gets or sets any security port that will indicate if a request is secure. This is sometimes used by load balancers or
+		/// security/certificate servers.
+		/// </summary>
+		[ConfigurationProperty(ElementNames.SecurityPort, DefaultValue = null)]
+		public int? SecurityPort {
+			get { return (int)this[ElementNames.SecurityPort]; }
+			set { this[ElementNames.SecurityPort] = value; }
+		}
+
 		#endregion
 
 		/// <summary>

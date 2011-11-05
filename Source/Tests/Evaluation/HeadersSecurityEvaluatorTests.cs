@@ -19,35 +19,18 @@ using Xunit;
 
 
 namespace SecuritySwitch.Tests.Evaluation {
-	public class SecurityEvaluatorTests {
+	public class HeadersSecurityEvaluatorTests {
 		[Fact]
-		public void IsSecureConnectionReturnsTrueIfRequestIndicatesSecurity() {
+		public void IsSecureConnectionReturnsTrueIfHeaderMatchesAnOffloadHeader() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
-			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(true);
-
-			var settings = new Settings();
-			var evaluator = new SecurityEvaluator();
-
-			// Act.
-			var result = evaluator.IsSecureConnection(mockRequest.Object, settings);
-
-			// Assert.
-			Assert.True(result);
-		}
-
-		[Fact]
-		public void IsSecureConnectionReturnsTrueIfRequestIndicatesNoSecurityYetHeaderMatchesAnOffloadHeader() {
-			// Arrange.
-			var mockRequest = new Mock<HttpRequestBase>();
-			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(false);
 			mockRequest.SetupGet(req => req.Headers).Returns(new NameValueCollection {
 				{ "SOME_HEADER", "some-value" },
 				{ "SSL_REQUEST", "on" }
 			});
 
 			var settings = new Settings();
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new HeadersSecurityEvaluator();
 
 			// Act.
 			settings.OffloadedSecurityHeaders = "SSL_REQUEST=on";
@@ -62,10 +45,9 @@ namespace SecuritySwitch.Tests.Evaluation {
 		}
 
 		[Fact]
-		public void IsSecureConnectionReturnsFalseIfRequestIndicatesNoSecurityAndNoHeaderMatchesAnOffloadHeader() {
+		public void IsSecureConnectionReturnsFalseIfNoHeaderMatchesAnOffloadHeader() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
-			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(false);
 			mockRequest.SetupGet(req => req.Headers).Returns(new NameValueCollection {
 				{ "SOME_HEADER", "some-value" }
 			});
@@ -74,23 +56,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 				OffloadedSecurityHeaders = "SSL_REQUEST=on"
 			};
 
-			var evaluator = new SecurityEvaluator();
-
-			// Act.
-			var result = evaluator.IsSecureConnection(mockRequest.Object, settings);
-
-			// Assert.
-			Assert.False(result);
-		}
-
-		[Fact]
-		public void IsSecureConnectionReturnsFalseIfRequestIndicatesNoSecurityAndNoOffloadHeadersSpecified() {
-			// Arrange.
-			var mockRequest = new Mock<HttpRequestBase>();
-			mockRequest.SetupGet(req => req.IsSecureConnection).Returns(false);
-
-			var settings = new Settings();
-			var evaluator = new SecurityEvaluator();
+			var evaluator = new HeadersSecurityEvaluator();
 
 			// Act.
 			var result = evaluator.IsSecureConnection(mockRequest.Object, settings);
