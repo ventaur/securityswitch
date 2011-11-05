@@ -106,7 +106,7 @@ namespace SecuritySwitch.Configuration {
 		/// </summary>
 		[ConfigurationProperty(ElementNames.SecurityPort, DefaultValue = null)]
 		public int? SecurityPort {
-			get { return (int)this[ElementNames.SecurityPort]; }
+			get { return (int?)this[ElementNames.SecurityPort]; }
 			set { this[ElementNames.SecurityPort] = value; }
 		}
 

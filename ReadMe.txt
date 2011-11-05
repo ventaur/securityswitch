@@ -77,6 +77,7 @@ ignoreAjaxRequests        bool        false           true, false
 ignoreSystemHandlers      bool        true            true, false
 mode                      Mode        On              On, RemoteOnly, LocalOnly, Off
 offloadedSecurityHeaders  string      [null]          query string like name/value pairs
+securityPort              int?        [null]          port indicating secure connection
 
 Set baseSecureUri to a valid URI when you do not have an SSL certificate installed on the same domain as your standard site (accessed via HTTP) or if your server is setup to serve HTTPS on a non-standard port (a port other than 443). Setting baseSecureUri will instruct the module to redirect any requests that need to switch from HTTP to HTTPS to a URI that starts with the baseSecureUri. For example, if baseSecureUri is "https://secure.mysite.com" and a request for http://www.mysite.com/Login.aspx is made (and Login.aspx is configured to be secure), the module will redirect visitors to https://secure.mysite.com/Login.aspx. Similarly, if baseSecureUri is "https://secure.somehostingsite.com/mysite", visitors would be redirected to https://secure.somehostingsite.com/mysite/Login.aspx.
 
@@ -92,7 +93,9 @@ When ignoreSystemHandlers is true (the default), the module will automatically a
 
 The mode attribute determines under what circumstances the module evaluates requests. A value of "On" enables the module for all requests, regardless of their origin. "RemoteOnly" will instruct the module to only consider requests that are made from a remote computer. If a request is made on the actual Web server (i.e. localhost, 127.0.0.1, etc.), the module will not act. Likewise, setting the mode to "LocalOnly" will enable module only when a request is made from the Web server. Finally, "Off" disables the module entirely. Disabling the module is great for troubleshooting issues with SSL and/or protocols, because it takes the Security Switch module out of the equation.
 
-Use offloadedSecurityHeaders to designate request headers that may be present from an offloaded security device (such as a dedicated SSL server/accelerator; e.g., ISA Server, etc.). The value of this attribute should look like a query string without the leading "?", with a name/value pair (e.g., SSL=Yes). If there are more than one headers the module should consider, delimit each pair with an ampersand (e.g., SSL=Yes&HTTPS=on).
+Use offloadedSecurityHeaders to designate request headers that may be present from an offloaded security device (such as a dedicated SSL server/accelerator; e.g., ISA Server, etc.) that indicate a secure connection. The value of this attribute should look like a query string without the leading "?", with a name/value pair (e.g., SSL=Yes). If there are more than one headers the module should consider, delimit each pair with an ampersand (e.g., SSL=Yes&HTTPS=on).
+
+Use securityPort to indicate a port that must match a request's port in order for the module to consider the request is over a secure connection.
 
 Paths
 ~~~~~
