@@ -8,6 +8,7 @@
 // =================================================================================
 
 using System;
+using System.Collections.Specialized;
 using System.Web;
 
 using SecuritySwitch.Abstractions;
@@ -34,8 +35,8 @@ namespace SecuritySwitch.Evaluation {
 			}
 
 			// Parse the expected security headers and check for each.
-			var expectedSecurityHeaders = HttpUtility.ParseQueryString(settings.OffloadedSecurityHeaders);
-			foreach (var name in expectedSecurityHeaders.AllKeys) {
+			NameValueCollection expectedSecurityHeaders = HttpUtility.ParseQueryString(settings.OffloadedSecurityHeaders);
+			foreach (string name in expectedSecurityHeaders.AllKeys) {
 				// Header not found, move along.
 				if (request.Headers[name] == null) {
 					continue;

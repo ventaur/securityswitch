@@ -40,7 +40,7 @@ namespace SecuritySwitch.Evaluation {
 			string targetUrl = null;
 			
 			// Evaluate the request's security.
-			var isSecureConnection = _securityEvaluator.IsSecureConnection(request, settings);
+			bool isSecureConnection = _securityEvaluator.IsSecureConnection(request, settings);
 
 			if (security == RequestSecurity.Secure && !isSecureConnection || security == RequestSecurity.Insecure && isSecureConnection) {
 				// Determine the target protocol and get any base target URL from the settings.

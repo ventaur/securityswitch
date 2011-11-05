@@ -82,8 +82,8 @@ namespace SecuritySwitch {
 		/// </summary>
 		/// <param name="context">The context in which the request to process is running.</param>
 		protected void ProcessRequest(HttpContextBase context) {
-			var request = context.Request;
-			var response = context.Response;
+			HttpRequestBase request = context.Request;
+			HttpResponseBase response = context.Response;
 
 			// Raise the EvaluateRequest event and check if a subscriber indicated the security for the current request.
 			var eventArgs = new EvaluateRequestEventArgs(context, _settings);
@@ -95,7 +95,7 @@ namespace SecuritySwitch {
 				expectedSecurity = eventArgs.ExpectedSecurity.Value;
 			} else {
 				// Evaluate this request with the configured settings, if necessary.
-				var requestEvaluator = RequestEvaluatorFactory.Create();
+				IRequestEvaluator requestEvaluator = RequestEvaluatorFactory.Create();
 				expectedSecurity = requestEvaluator.Evaluate(request, _settings);
 			}
 
@@ -105,16 +105,16 @@ namespace SecuritySwitch {
 			}
 
 			// Ensure the request matches the expected security.
-			var securityEvaluator = SecurityEvaluatorFactory.Create();
-			var securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
-			var targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
+			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create();
+			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
+			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
 			if (string.IsNullOrEmpty(targetUrl)) {
 				// No action is needed if the security enforcer did not return a target URL.
 				return;
 			}
 
 			// Redirect.
-			var redirector = LocationRedirectorFactory.Create();
+			ILocationRedirector redirector = LocationRedirectorFactory.Create();
 			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
 		}
 

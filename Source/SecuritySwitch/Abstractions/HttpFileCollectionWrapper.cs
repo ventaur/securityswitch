@@ -31,7 +31,7 @@ namespace SecuritySwitch.Abstractions {
 
 		public override HttpPostedFileBase this[string name] {
 			get {
-				var httpPostedFile = _collection[name];
+				HttpPostedFile httpPostedFile = _collection[name];
 				return (httpPostedFile == null ? null : new HttpPostedFileWrapper(httpPostedFile));
 			}
 		}
@@ -64,7 +64,7 @@ namespace SecuritySwitch.Abstractions {
 		}
 
 		public override HttpPostedFileBase Get(string name) {
-			var httpPostedFile = _collection.Get(name);
+			HttpPostedFile httpPostedFile = _collection.Get(name);
 			return (httpPostedFile == null ? null : new HttpPostedFileWrapper(httpPostedFile));
 		}
 

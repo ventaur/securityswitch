@@ -13,6 +13,7 @@ using System.Security.Principal;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Profile;
+using System.Web.SessionState;
 
 
 namespace SecuritySwitch.Abstractions {
@@ -91,7 +92,7 @@ namespace SecuritySwitch.Abstractions {
 
 		public override HttpSessionStateBase Session {
 			get {
-				var session = _context.Session;
+				HttpSessionState session = _context.Session;
 				return (session == null ? null : new HttpSessionStateWrapper(session));
 			}
 		}

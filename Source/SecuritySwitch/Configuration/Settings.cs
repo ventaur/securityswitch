@@ -125,8 +125,8 @@ namespace SecuritySwitch.Configuration {
 			base.PostDeserialize();
 
 			// Validate the base secure/insecure URI settings.
-			var isBaseInsecureUriEmpty = string.IsNullOrEmpty(BaseInsecureUri);
-			var isBaseSecureUriEmpty = string.IsNullOrEmpty(BaseSecureUri);
+			bool isBaseInsecureUriEmpty = string.IsNullOrEmpty(BaseInsecureUri);
+			bool isBaseSecureUriEmpty = string.IsNullOrEmpty(BaseSecureUri);
 			if (!isBaseInsecureUriEmpty && isBaseSecureUriEmpty || isBaseInsecureUriEmpty && !isBaseSecureUriEmpty) {
 				throw new ConfigurationErrorsException(
 					"If either baseInsecureUri or baseSecureUri are specified, then both must be provided.");
@@ -154,18 +154,20 @@ namespace SecuritySwitch.Configuration {
 		/// </summary>
 		/// <param name="pathSetting">The PathSetting to evaluate.</param>
 		private static void ResolveAppRelativeToken(PathSetting pathSetting) {
-			if (pathSetting.Path.StartsWith("~/")) {
-				// Get the application virtual path.
-				var appVirtualPath = VirtualPathUtility.AppendTrailingSlash(HttpRuntime.AppDomainAppVirtualPath);
-
-				// If the match type is Regex, be sure to escape the app virtual path.
-				if (pathSetting.MatchType == PathMatchType.Regex) {
-					appVirtualPath = Regex.Escape(appVirtualPath);
-				}
-
-				// Replace the app-relative token with the app virtual path.
-				pathSetting.Path = pathSetting.Path.Replace("~/", appVirtualPath);
+			if (!pathSetting.Path.StartsWith("~/")) {
+				return;
 			}
+
+			// Get the application virtual path.
+			string appVirtualPath = VirtualPathUtility.AppendTrailingSlash(HttpRuntime.AppDomainAppVirtualPath);
+
+			// If the match type is Regex, be sure to escape the app virtual path.
+			if (pathSetting.MatchType == PathMatchType.Regex) {
+				appVirtualPath = Regex.Escape(appVirtualPath);
+			}
+
+			// Replace the app-relative token with the app virtual path.
+			pathSetting.Path = pathSetting.Path.Replace("~/", appVirtualPath);
 		}
 	}
 }

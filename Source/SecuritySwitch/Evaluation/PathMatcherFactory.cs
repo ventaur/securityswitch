@@ -26,7 +26,7 @@ namespace SecuritySwitch.Evaluation {
 		private static IDictionary<PathMatchType, IPathMatcher> CachedMatchers {
 			get {
 				// If a current HttpContext exists, use it for caching PathMatchers for the current request; otherwise, do not cache them.
-				var currentContext = HttpContext.Current;
+				HttpContext currentContext = HttpContext.Current;
 				if (currentContext == null) {
 					return null;
 				}
@@ -50,7 +50,7 @@ namespace SecuritySwitch.Evaluation {
 		/// <returns></returns>
 		internal static IPathMatcher Create(PathMatchType matchType) {
 			// Check for cached matchers first.
-			var cachedMatchers = CachedMatchers;
+			IDictionary<PathMatchType, IPathMatcher> cachedMatchers = CachedMatchers;
 			if (cachedMatchers != null && cachedMatchers.ContainsKey(matchType)) {
 				return cachedMatchers[matchType];
 			}
