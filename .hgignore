@@ -4,3 +4,5 @@ Deploy/*
 NuGet/content/SecuritySwitch-v4.xsd
 NuGet/lib/*
 NuGet/*.nupkg
+ExampleWebSite/log.txt
+packages/*

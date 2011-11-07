@@ -10,6 +10,8 @@ using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Web;
 
+using Common.Logging;
+
 
 namespace SecuritySwitch.Configuration {
 	/// <summary>
@@ -17,6 +19,8 @@ namespace SecuritySwitch.Configuration {
 	/// </summary>
 	public class Settings : ConfigurationSection {
 		private const string UriValidationPattern = @"[\w\-][\w\.\-,]*(?:\:\d+)?(?:/[\w\.\-]+)*/?)$";
+
+		private readonly ILog _log = LogManager.GetLogger<Settings>();
 
 		#region Properties
 
@@ -113,7 +117,7 @@ namespace SecuritySwitch.Configuration {
 		#endregion
 
 		/// <summary>
-		/// Overriden to ignore namespace-related attributes.
+		/// Overridden to ignore namespace-related attributes.
 		/// </summary>
 		/// <param name="name">The name of the unrecognized attribute.</param>
 		/// <param name="value">The value of the unrecognized attribute.</param>
@@ -143,12 +147,14 @@ namespace SecuritySwitch.Configuration {
 			}
 
 			// Resolve any special tokens found in each PathSetting's path.
+			_log.Debug(m => m("Resolving any application relative tokens for all paths."));
 			foreach (PathSetting pathSetting in Paths) {
 				ResolveAppRelativeToken(pathSetting);
 			}
 
 			// Insert a special PathSetting to ignore system handlers, if indicated.
 			if (IgnoreSystemHandlers) {
+				_log.Debug(m => m("Inserting a new path setting to ignore system handlers."));
 				Paths.Insert(0, new PathSetting {
 					Path = @"\.axd(?:[/\?#].*)?$",
 					MatchType = PathMatchType.Regex,

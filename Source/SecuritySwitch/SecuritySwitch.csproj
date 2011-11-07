@@ -45,6 +45,9 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\..\packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
@@ -118,6 +121,9 @@
       <Visible>false</Visible>
     </OutputFiles>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Target Name="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
     <Delete Files="@(IntermediateAssembly)" Condition="'$(SignAssembly)' != 'true'" />
   </Target>
@@ -157,7 +163,7 @@
       <ArchiveFileName>$(DownloadsDir)$(AssemblyName) v%(AssemblyInfo.Version) - $(SN)Binary.zip</ArchiveFileName>
     </PropertyGroup>
     <ItemGroup>
-      <DownloadFiles Include="$(SolutionDir)*.txt;$(SolutionDir)$(ConfigSchemaFileName);@(OutputFiles)" />
+      <DownloadFiles Include="$(SolutionDir)*.txt;$(SolutionDir)$(ConfigSchemaFileName);$(OutDir)*.dll" />
     </ItemGroup>
     <RemoveDir Directories="$(DownloadsWorkDir)" />
     <Copy SourceFiles="@(DownloadFiles)" DestinationFolder="$(DownloadsWorkDir)" />

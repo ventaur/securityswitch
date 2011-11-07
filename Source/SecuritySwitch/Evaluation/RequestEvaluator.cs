@@ -6,8 +6,9 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-
 using System;
+
+using Common.Logging;
 
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
@@ -21,6 +22,8 @@ namespace SecuritySwitch.Evaluation {
 		public const string XRequestedWithHeaderKey = "X-Requested-With";
 		public const string AjaxRequestHeaderValue = "XMLHttpRequest";
 
+		private static readonly ILog _log = LogManager.GetLogger<RequestEvaluator>();
+
 		/// <summary>
 		/// Evaluates the specified request for the need to switch its security.
 		/// </summary>
@@ -32,24 +35,29 @@ namespace SecuritySwitch.Evaluation {
 		public RequestSecurity Evaluate(HttpRequestBase request, Settings settings) {
 			// Test if the request matches the configured mode.
 			if (!RequestMatchesMode(request, settings.Mode)) {
+				_log.Debug(m => m("Request does not match mode and should be ignored."));
 				return RequestSecurity.Ignore;
 			}
 
 			if (settings.IgnoreAjaxRequests && IsAjaxRequest(request)) {
+				_log.Debug(m => m("Request is an AJAX request that should be ignored."));
 				return RequestSecurity.Ignore;
 			}
 
 			// Find any matching path setting for the request.
+			_log.Debug(m => m("Checking for a matching path for this request..."));
 			string requestPath = request.RawUrl;
 			foreach (PathSetting pathSetting in settings.Paths) {
 				// Get an appropriate path matcher and test the request's path for a match.
 				IPathMatcher matcher = PathMatcherFactory.Create(pathSetting.MatchType);
 				if (matcher.IsMatch(requestPath, pathSetting.Path, pathSetting.IgnoreCase)) {
+					_log.Debug(m => m("Matching path found; security is {0}.", pathSetting.Security));
 					return pathSetting.Security;
 				}
 			}
 
 			// Any non-matching request should default to Insecure.
+			_log.Debug(m => m("No matching path found; security defaults to Insecure."));
 			return RequestSecurity.Insecure;
 		}
 
