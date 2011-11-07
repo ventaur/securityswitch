@@ -31,7 +31,7 @@ namespace SecuritySwitch.Evaluation {
 			}
 			
 			// If security headers are expected, and headers exist, create a HeadersSecurityEvaluator.
-			if (string.IsNullOrEmpty(settings.OffloadedSecurityHeaders) && request.Headers != null) {
+			if (!string.IsNullOrEmpty(settings.OffloadedSecurityHeaders) && request.Headers != null) {
 				_log.Debug(m => m("Creating HeadersSecurityEvaluator."));
 				return new HeadersSecurityEvaluator();
 			}
