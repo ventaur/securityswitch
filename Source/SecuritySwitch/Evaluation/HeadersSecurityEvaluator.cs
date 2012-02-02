@@ -6,7 +6,7 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-using System;
+
 using System.Collections.Specialized;
 using System.Web;
 
@@ -20,7 +20,7 @@ namespace SecuritySwitch.Evaluation {
 	/// <summary>
 	/// A security evaluator that looks for the presence of, or an expected value match with, one or more headers.
 	/// </summary>
-	public class HeadersSecurityEvaluator : ISecurityEvaluator {
+	public class HeadersSecurityEvaluator : NameValueCollectionSecurityEvaluator {
 		private static readonly ILog _log = LogManager.GetLogger<HeadersSecurityEvaluator>();
 
 		/// <summary>
@@ -31,28 +31,20 @@ namespace SecuritySwitch.Evaluation {
 		/// <returns>
 		///   <c>true</c> if the specified request is over a secure connection; otherwise, <c>false</c>.
 		/// </returns>
-		public bool IsSecureConnection(HttpRequestBase request, Settings settings) {
+		public override bool IsSecureConnection(HttpRequestBase request, Settings settings) {
 			_log.Debug(m => m("Checking for any header that matches one from OffloadedSecurityHeaders..."));
 
-			// Parse the expected security headers and check for each.
+			// Parse the expected security headers and check for each against the request headers.
 			NameValueCollection expectedSecurityHeaders = HttpUtility.ParseQueryString(settings.OffloadedSecurityHeaders);
-			foreach (string name in expectedSecurityHeaders.AllKeys) {
-				// Header not found, move along.
-				if (request.Headers[name] == null) {
-					continue;
-				}
+			bool isSecure = FindAnyNameValueMatch(expectedSecurityHeaders, request.Headers);
 
-				// If the header exists, but no value is expected OR if the expected value matches the header's value, 
-				// indicated a secure connection.
-				if (string.IsNullOrEmpty(expectedSecurityHeaders[name]) ||
-				    string.Equals(expectedSecurityHeaders[name], request.Headers[name], StringComparison.OrdinalIgnoreCase)) {
-						_log.Debug(m => m("Header match found; connection is secure."));
-					return true;
-				}
-			}
+			_log.Debug(
+				m =>
+				m(isSecure 
+					? "Header match found; connection is secure." 
+					: "No match found; connection is presumed not secure."));
 
-			_log.Debug(m => m("No match found; connection is presumed not secure."));
-			return false;
+			return isSecure;
 		}
 	}
 }

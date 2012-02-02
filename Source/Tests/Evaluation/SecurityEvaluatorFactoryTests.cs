@@ -36,7 +36,24 @@ namespace SecuritySwitch.Tests.Evaluation {
 		}
 
 		[Fact]
-		public void CreateReturnsHeadersSecurityEvaluatorIfSecurityPortNotSpecifiedAndHeadersExpectedAndPresent() {
+		public void CreateReturnsServerVariablesSecurityEvaluatorIfSecurityPortNotSpecifiedAndServerVariablesExpectedAndPresent() {
+			// Arrange.
+			var mockRequest = new Mock<HttpRequestBase>();
+			mockRequest.SetupGet(req => req.ServerVariables).Returns(new NameValueCollection());
+
+			var settings = new Settings {
+				OffloadedSecurityServerVariables = "HTTP_X_FORWARD_PROTOCOL="
+			};
+
+			// Act.
+			var evaluator = SecurityEvaluatorFactory.Create(mockRequest.Object, settings);
+
+			// Assert.
+			Assert.IsType<ServerVariablesSecurityEvaluator>(evaluator);
+		}
+
+		[Fact]
+		public void CreateReturnsHeadersSecurityEvaluatorIfSecurityPortNotSpecifiedAndServerVariablesNotExpectedAndHeadersExpectedAndPresent() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
 			mockRequest.SetupGet(req => req.Headers).Returns(new NameValueCollection());
@@ -53,7 +70,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 		}
 
 		[Fact]
-		public void CreateReturnsStandardSecurityEvaluatorIfSecurityPortNotSpecifiedAndHeadersNotExpected() {
+		public void CreateReturnsStandardSecurityEvaluatorIfSecurityPortNotSpecifiedAndServerVariablesNotExpectedAndHeadersNotExpected() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
 			var settings = new Settings();

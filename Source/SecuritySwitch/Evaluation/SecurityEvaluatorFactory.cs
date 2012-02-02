@@ -29,6 +29,12 @@ namespace SecuritySwitch.Evaluation {
 				_log.Debug(m => m("Creating PortSecurityEvaluator."));
 				return new PortSecurityEvaluator();
 			}
+
+			// If security server variables are expected, and server variables exist, create a ServerVariablesSecurityEvaluator.
+			if (!string.IsNullOrEmpty(settings.OffloadedSecurityServerVariables) && request.ServerVariables != null) {
+				_log.Debug(m => m("Creating ServerVariablesSecurityEvaluator."));
+				return new ServerVariablesSecurityEvaluator();
+			}
 			
 			// If security headers are expected, and headers exist, create a HeadersSecurityEvaluator.
 			if (!string.IsNullOrEmpty(settings.OffloadedSecurityHeaders) && request.Headers != null) {

@@ -31,14 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Moq">
-      <HintPath>..\..\SharedLibraries\Moq\Moq.dll</HintPath>
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET35\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
-    <Reference Include="xunit">
-      <HintPath>..\..\SharedLibraries\xUnit\xunit.dll</HintPath>
+    <Reference Include="xunit, Version=1.9.0.1566, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\xunit.1.9.0.1566\lib\xunit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +52,7 @@
     <Compile Include="Evaluation\SecurityEnforcerTests.cs" />
     <Compile Include="Evaluation\HeadersSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\SecurityEvaluatorFactoryTests.cs" />
+    <Compile Include="Evaluation\ServerVariablesSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\StandardSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\StartsWithPathMatcherTests.cs" />
     <Compile Include="Evaluation\ExactPathMatcherTests.cs" />
@@ -64,6 +67,9 @@
       <Project>{73BDFCB9-B4EC-46E3-8028-AF13153AB210}</Project>
       <Name>SecuritySwitch</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

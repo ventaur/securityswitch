@@ -18,6 +18,7 @@ namespace SecuritySwitch.Configuration {
 		internal const string IgnoreSystemHandlers = "ignoreSystemHandlers";
 		internal const string Mode = "mode";
 		internal const string OffloadedSecurityHeaders = "offloadedSecurityHeaders";
+		internal const string OffloadedSecurityServerVariables = "offloadedSecurityServerVariables";
 		internal const string SecurityPort = "securityPort";
 
 		internal const string Paths = "paths";

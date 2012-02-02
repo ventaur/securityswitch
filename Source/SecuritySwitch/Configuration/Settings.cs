@@ -97,6 +97,17 @@ namespace SecuritySwitch.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets any server variables (and optional values) that indicate if the request is secure. This is often used when 
+		/// security (SSL) is offloaded to another server (e.g., ISA Server). This property's value should mimic a query string 
+		/// (without the leading '?').
+		/// </summary>
+		[ConfigurationProperty(ElementNames.OffloadedSecurityServerVariables), RegexStringValidator(@"^([^?=&]+)(=([^&]*))(&[^?=&]+)(=([^&]*))*|$")]
+		public string OffloadedSecurityServerVariables {
+			get { return (string)this[ElementNames.OffloadedSecurityServerVariables]; }
+			set { this[ElementNames.OffloadedSecurityServerVariables] = (!string.IsNullOrEmpty(value) ? value : null); }
+		}
+
+		/// <summary>
 		/// Gets the collection of path settings read from the configuration section.
 		/// </summary>
 		[ConfigurationProperty(ElementNames.Paths, IsDefaultCollection = true, IsRequired = false)]
@@ -122,7 +133,7 @@ namespace SecuritySwitch.Configuration {
 		/// <param name="name">The name of the unrecognized attribute.</param>
 		/// <param name="value">The value of the unrecognized attribute.</param>
 		/// <returns>
-		/// true when an unknown attribute is encountered while deserializing; otherwise, false.
+		/// true when an unknown attribute is encountered while de-serializing; otherwise, false.
 		/// </returns>
 		protected override bool OnDeserializeUnrecognizedAttribute(string name, string value) {
 			if (name.IndexOf(':') > 0 || name.StartsWith("xmlns")) {
@@ -133,7 +144,7 @@ namespace SecuritySwitch.Configuration {
 		}
 
 		/// <summary>
-		/// Called after deserialization for special validation, app-path resolution, and to setup any system handler ignore settings.
+		/// Called after de-serialization for special validation, app-path resolution, and to setup any system handler ignore settings.
 		/// </summary>
 		protected override void PostDeserialize() {
 			base.PostDeserialize();
