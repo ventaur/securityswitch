@@ -6,8 +6,11 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
+
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -17,9 +20,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SecuritySwitch")]
-[assembly: AssemblyCopyright("Copyright © 2004-2011 Matt Sollars")]
+[assembly: AssemblyCopyright("Copyright © 2004-2012 Matt Sollars")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly: CLSCompliant(true)]
+[assembly: AllowPartiallyTrustedCallers]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -38,5 +44,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.1.4414.0")]
-[assembly: AssemblyFileVersion("4.1.4414.0")]
+[assembly: AssemblyVersion("4.1.4463.0")]
+[assembly: AssemblyFileVersion("4.1.4463.0")]

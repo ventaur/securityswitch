@@ -111,7 +111,7 @@
 		<SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">..\..\</SolutionDir>
 		<ConfigSchemaFileName>$(AssemblyName)-v4.xsd</ConfigSchemaFileName>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Rerun)' != 'true'">
+	<PropertyGroup Condition="'$(Rerun)' != 'true' and '$(Configuration)' == 'Release'">
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>$(SolutionDir)$(AssemblyName).snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
