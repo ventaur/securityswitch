@@ -1,5 +1,5 @@
 ﻿// =================================================================================
-// Copyright © 2004-2011 Matt Sollars
+// Copyright © 2004-2012 Matt Sollars
 // All rights reserved.
 // 
 // This code and information is provided "as is" without warranty of any kind,
