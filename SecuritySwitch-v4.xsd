@@ -31,6 +31,8 @@
 			<xs:attribute name="ignoreSystemHandlers" type="DotNetBoolean" />
 			<xs:attribute name="mode" type="Mode" />
 			<xs:attribute name="offloadedSecurityHeaders" type="xs:string" />
+			<xs:attribute name="offloadedSecurityServerVariables" type="xs:string" />
+			<xs:attribute name="securityPort" type="PortNumber" />
 		</xs:complexType>
 	</xs:element>
 
@@ -62,6 +64,11 @@
 			<xs:enumeration value="Secure" />
 			<xs:enumeration value="Insecure" />
 			<xs:enumeration value="Ignore" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PortNumber">
+		<xs:restriction base="xs:unsignedShort">
+			<xs:minInclusive value="1" />
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

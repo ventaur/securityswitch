@@ -1,12 +1,11 @@
 ﻿// =================================================================================
-// Copyright © 2004-2011 Matt Sollars
+// Copyright © 2004-2012 Matt Sollars
 // All rights reserved.
 // 
 // This code and information is provided "as is" without warranty of any kind,
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -44,5 +43,5 @@ using System.Security;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.1.4463.0")]
-[assembly: AssemblyFileVersion("4.1.4463.0")]
+[assembly: AssemblyVersion("4.1.4464.0")]
+[assembly: AssemblyFileVersion("4.1.4464.0")]

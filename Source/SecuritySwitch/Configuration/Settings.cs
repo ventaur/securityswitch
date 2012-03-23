@@ -1,5 +1,5 @@
 // =================================================================================
-// Copyright © 2004-2011 Matt Sollars
+// Copyright © 2004-2012 Matt Sollars
 // All rights reserved.
 // 
 // This code and information is provided "as is" without warranty of any kind,
@@ -119,7 +119,7 @@ namespace SecuritySwitch.Configuration {
 		/// Gets or sets any security port that will indicate if a request is secure. This is sometimes used by load balancers or
 		/// security/certificate servers.
 		/// </summary>
-		[ConfigurationProperty(ElementNames.SecurityPort, DefaultValue = null)]
+		[ConfigurationProperty(ElementNames.SecurityPort, DefaultValue = null), IntegerValidator(MinValue = 1, MaxValue = 65535)]
 		public int? SecurityPort {
 			get { return (int?)this[ElementNames.SecurityPort]; }
 			set { this[ElementNames.SecurityPort] = value; }
@@ -166,12 +166,13 @@ namespace SecuritySwitch.Configuration {
 			// Insert a special PathSetting to ignore system handlers, if indicated.
 			if (IgnoreSystemHandlers) {
 				_log.Debug(m => m("Inserting a new path setting to ignore system handlers."));
-				Paths.Insert(0, new PathSetting {
-					Path = @"\.axd(?:[/\?#].*)?$",
-					MatchType = PathMatchType.Regex,
-					IgnoreCase = true,
-					Security = RequestSecurity.Ignore
-				});
+				Paths.Insert(0,
+				             new PathSetting {
+				             	Path = @"\.axd(?:[/\?#].*)?$",
+				             	MatchType = PathMatchType.Regex,
+				             	IgnoreCase = true,
+				             	Security = RequestSecurity.Ignore
+				             });
 			}
 		}
 

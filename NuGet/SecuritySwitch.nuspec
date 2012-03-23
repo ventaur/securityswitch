@@ -2,8 +2,8 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>SecuritySwitch</id>
-    <version>4.1.4414.0</version>
-    <title>SecuritySwitch 4</title>
+    <version>4.1.4464.0</version>
+    <title>SecuritySwitch</title>
     <authors>Matt Sollars</authors>
     <description>.NET libraries for automatically switching between HTTP and HTTPS protocols.</description>
     <language>en-US</language>
