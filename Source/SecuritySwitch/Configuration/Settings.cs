@@ -6,6 +6,8 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
+
+using System;
 using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -119,7 +121,7 @@ namespace SecuritySwitch.Configuration {
 		/// Gets or sets any security port that will indicate if a request is secure. This is sometimes used by load balancers or
 		/// security/certificate servers.
 		/// </summary>
-		[ConfigurationProperty(ElementNames.SecurityPort, DefaultValue = null), IntegerValidator(MinValue = 1, MaxValue = 65535)]
+		[ConfigurationProperty(ElementNames.SecurityPort, DefaultValue = null)]
 		public int? SecurityPort {
 			get { return (int?)this[ElementNames.SecurityPort]; }
 			set { this[ElementNames.SecurityPort] = value; }
@@ -153,8 +155,12 @@ namespace SecuritySwitch.Configuration {
 			bool isBaseInsecureUriEmpty = string.IsNullOrEmpty(BaseInsecureUri);
 			bool isBaseSecureUriEmpty = string.IsNullOrEmpty(BaseSecureUri);
 			if (!isBaseInsecureUriEmpty && isBaseSecureUriEmpty || isBaseInsecureUriEmpty && !isBaseSecureUriEmpty) {
-				throw new ConfigurationErrorsException(
-					"If either baseInsecureUri or baseSecureUri are specified, then both must be provided.");
+				throw new ApplicationException("If either baseInsecureUri or baseSecureUri are specified, then both must be provided.");
+			}
+
+			// Validate the SecurityPort, if specified.
+			if (SecurityPort.HasValue && (SecurityPort.Value < 1 || SecurityPort.Value > 65535)) {
+				throw new ApplicationException("If provided, securityPort must be a valid port number between 1 and 65535.");
 			}
 
 			// Resolve any special tokens found in each PathSetting's path.
