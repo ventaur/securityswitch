@@ -1,13 +1,26 @@
 ﻿using System;
 using System.Web;
 
+using NLog;
+
 using SecuritySwitch;
 using SecuritySwitch.Configuration;
 
 
 namespace ExampleWebSite {
 	public class Global : HttpApplication {
-		protected void Application_Start(object sender, EventArgs e) {}
+		private static readonly NLog.Logger _logger = LogManager.GetLogger("SecuritySwitch");
+
+		protected void Application_Start(object sender, EventArgs e) {
+			// Setup a log action in order to capture logs from SecuritySwitch.
+			// Here, we just pass-through the log message and level to NLog.
+			SecuritySwitch.Logger.SetLogAction(
+				(message, logLevel) => {
+					// Translate the SecuritySwitch LogLevel to NLog's LogLevel.
+					var translatedLogLevel = LogLevel.FromString(logLevel.ToString());
+					_logger.Log(translatedLogLevel, message);
+				});
+		}
 
 		protected void Session_Start(object sender, EventArgs e) {}
 
