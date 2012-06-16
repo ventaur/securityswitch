@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 
-using Common.Logging;
-
 using SecuritySwitch.Configuration;
 
 
@@ -21,8 +19,6 @@ namespace SecuritySwitch.Evaluation {
 	/// </summary>
 	public static class PathMatcherFactory {
 		const string CachedMatchersKey = "SecuritySwitch.Matchers";
-
-		private static readonly ILog _log = LogManager.GetCurrentClassLogger();
 
 		/// <summary>
 		/// Gets any cached path matchers.
@@ -57,7 +53,7 @@ namespace SecuritySwitch.Evaluation {
 			IDictionary<PathMatchType, IPathMatcher> cachedMatchers = CachedMatchers;
 			if (cachedMatchers != null && cachedMatchers.ContainsKey(matchType)) {
 				IPathMatcher cachedPathMatcher = cachedMatchers[matchType];
-				_log.Debug(m => m("Cached {0} retrieved.", cachedPathMatcher.GetType().Name));
+				Logger.LogFormat("Cached {0} retrieved.", cachedPathMatcher.GetType().Name);
 				return cachedPathMatcher;
 			}
 
@@ -85,7 +81,7 @@ namespace SecuritySwitch.Evaluation {
 				cachedMatchers.Add(matchType, pathMatcher);
 			}
 
-			_log.Debug(m => m("Creating {0}.", pathMatcher.GetType().Name));
+			Logger.LogFormat("Creating {0}.", pathMatcher.GetType().Name);
 			return pathMatcher;
 		}
 	}

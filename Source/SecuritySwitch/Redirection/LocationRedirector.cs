@@ -6,7 +6,6 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-using Common.Logging;
 
 using SecuritySwitch.Abstractions;
 
@@ -16,8 +15,6 @@ namespace SecuritySwitch.Redirection {
 	/// The default implementation of ILocationRedirector.
 	/// </summary>
 	public class LocationRedirector : ILocationRedirector {
-		private readonly ILog _log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// Redirects to the specified URL.
 		/// </summary>
@@ -26,7 +23,7 @@ namespace SecuritySwitch.Redirection {
 		/// <param name="bypassSecurityWarning">If set to <c>true</c> security warnings will be bypassed.</param>
 		public void Redirect(HttpResponseBase response, string url, bool bypassSecurityWarning) {
 			if (bypassSecurityWarning) {
-				_log.Debug(m => m("Bypassing security warning via a response header and JavaScript."));
+				Logger.Log("Bypassing security warning via a response header and JavaScript.");
 
 				// Clear the current response buffer.
 				response.Clear();
@@ -41,7 +38,7 @@ namespace SecuritySwitch.Redirection {
 				response.Write("';</script>");
 				response.Write("</head><body></body></html>");
 			} else {
-				_log.Debug(m => m("Issuing permanent redirect."));
+				Logger.Log("Issuing permanent redirect.");
 
 				// Permanent redirect.
 				// TODO: Make the status code configurable (i.e. permanent vs. temporary).

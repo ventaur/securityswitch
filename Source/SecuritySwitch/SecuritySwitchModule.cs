@@ -10,8 +10,6 @@ using System;
 using System.Web;
 using System.Web.Configuration;
 
-using Common.Logging;
-
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
 using SecuritySwitch.Evaluation;
@@ -23,8 +21,6 @@ namespace SecuritySwitch {
 	/// Evaluates each request for the need to switch to HTTP/HTTPS.
 	/// </summary>
 	public class SecuritySwitchModule : IHttpModule {
-		private static readonly ILog _log = LogManager.GetLogger<SecuritySwitchModule>();
-
 		// Cached copy of the module's settings for reuse during this request.
 		private Settings _settings;
 
@@ -38,17 +34,17 @@ namespace SecuritySwitch {
 		/// </param>
 		public void Init(HttpApplication context) {
 			if (context == null) {
-				_log.Warn(m => m("No HttpApplication supplied."));
+				Logger.Log("No HttpApplication supplied.", Logger.LogLevel.Warn);
 				return;
 			}
 
-			_log.Debug(m => m("Begin module initialization."));
+			Logger.Log("Begin module initialization.");
 
 			// Get the settings for the securitySwitch section.
-			_log.Info(m => m("Getting securitySwitch configuration section."));
+			Logger.Log("Getting securitySwitch configuration section.", Logger.LogLevel.Info);
 			_settings = WebConfigurationManager.GetSection("securitySwitch") as Settings;
 			if (_settings == null || _settings.Mode == Mode.Off) {
-				_log.Info(m => m("{0}; module not activated.", _settings == null ? "No settings provided" : "Mode is Off"));
+				Logger.LogFormat("{0}; module not activated.", Logger.LogLevel.Info, _settings == null ? "No settings provided" : "Mode is Off");
 				return;
 			}
 
@@ -60,17 +56,17 @@ namespace SecuritySwitch {
 			//   Path/Url. The rewritten URL is actually stored in an internal field of HttpRequest; short of reflection, 
 			//   it's not obtainable.
 			// WARNING: Do not access the Form collection of the HttpRequest object to avoid weird issues with post-backs from the application root.
-			_log.Debug(m => m("Adding handler for the application's 'AcquireRequestState' event."));
+			Logger.Log("Adding handler for the application's 'AcquireRequestState' event.");
 			context.AcquireRequestState += ProcessRequest;
 
-			_log.Debug(m => m("End module initialization."));
+			Logger.Log("End module initialization.");
 		}
 
 		/// <summary>
 		/// Disposes of the resources (other than memory) used by the module that implements <see cref="T:System.Web.IHttpModule"/>.
 		/// </summary>
 		public void Dispose() {
-			_log.Debug(m => m("Dispose: Module disposing."));
+			Logger.Log("Dispose: Module disposing.");
 		}
 
 
@@ -83,7 +79,7 @@ namespace SecuritySwitch {
 			// Cast the source as an HttpApplication instance.
 			var application = sender as HttpApplication;
 			if (application == null) {
-				_log.Warn(m => m("No HttpApplication supplied."));
+				Logger.Log("No HttpApplication supplied.", Logger.LogLevel.Warn);
 				return;
 			}
 
@@ -97,20 +93,20 @@ namespace SecuritySwitch {
 		/// </summary>
 		/// <param name="context">The context in which the request to process is running.</param>
 		protected void ProcessRequest(HttpContextBase context) {
-			_log.Debug(m => m("Begin request processing."));
+			Logger.Log("Begin request processing.");
 
 			HttpRequestBase request = context.Request;
 			HttpResponseBase response = context.Response;
 
 			// Raise the EvaluateRequest event and check if a subscriber indicated the security for the current request.
-			_log.Info(m => m("Raising the EvaluateRequest event."));
+			Logger.Log("Raising the EvaluateRequest event.", Logger.LogLevel.Info);
 			var eventArgs = new EvaluateRequestEventArgs(context, _settings);
 			InvokeEvaluateRequest(eventArgs);
 
 			RequestSecurity expectedSecurity;
 			if (eventArgs.ExpectedSecurity.HasValue) {
 				// Use the value returned by the EvaluateRequest event.
-				_log.Info(m => m("Using the expected security value provided by EvaluateRequest handler."));
+				Logger.Log("Using the expected security value provided by EvaluateRequest handler.", Logger.LogLevel.Info);
 				expectedSecurity = eventArgs.ExpectedSecurity.Value;
 			} else {
 				// Evaluate this request with the configured settings, if necessary.
@@ -120,23 +116,23 @@ namespace SecuritySwitch {
 
 			if (expectedSecurity == RequestSecurity.Ignore) {
 				// No action is needed for a result of Ignore.
-				_log.Info(m => m("Expected security is Ignore; done."));
+				Logger.Log("Expected security is Ignore; done.", Logger.LogLevel.Info);
 				return;
 			}
 
 			// Ensure the request matches the expected security.
-			_log.Info(m => m("Determining the URI for the expected security."));
+			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
 			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
 			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
 			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
 			if (string.IsNullOrEmpty(targetUrl)) {
 				// No action is needed if the security enforcer did not return a target URL.
-				_log.Info(m => m("No target URI determined; done."));
+				Logger.Log("No target URI determined; done.", Logger.LogLevel.Info);
 				return;
 			}
 
 			// Redirect.
-			_log.Info(m => m("Redirecting the request."));
+			Logger.Log("Redirecting the request.", Logger.LogLevel.Info);
 			ILocationRedirector redirector = LocationRedirectorFactory.Create();
 			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
 		}

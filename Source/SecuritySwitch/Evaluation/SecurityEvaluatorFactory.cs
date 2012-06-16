@@ -6,7 +6,6 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-using Common.Logging;
 
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
@@ -17,8 +16,6 @@ namespace SecuritySwitch.Evaluation {
 	/// A factory for ISecurityEvaluator.
 	/// </summary>
 	public static class SecurityEvaluatorFactory {
-		private static readonly ILog _log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// Gets a security evaluator.
 		/// </summary>
@@ -26,24 +23,24 @@ namespace SecuritySwitch.Evaluation {
 		public static ISecurityEvaluator Create(HttpRequestBase request, Settings settings) {
 			// If a security port is configured, create a PortSecurityEvaluator.
 			if (settings.SecurityPort.HasValue) {
-				_log.Debug(m => m("Creating PortSecurityEvaluator."));
+				Logger.Log("Creating PortSecurityEvaluator.");
 				return new PortSecurityEvaluator();
 			}
 
 			// If security server variables are expected, and server variables exist, create a ServerVariablesSecurityEvaluator.
 			if (!string.IsNullOrEmpty(settings.OffloadedSecurityServerVariables) && request.ServerVariables != null) {
-				_log.Debug(m => m("Creating ServerVariablesSecurityEvaluator."));
+				Logger.Log("Creating ServerVariablesSecurityEvaluator.");
 				return new ServerVariablesSecurityEvaluator();
 			}
 			
 			// If security headers are expected, and headers exist, create a HeadersSecurityEvaluator.
 			if (!string.IsNullOrEmpty(settings.OffloadedSecurityHeaders) && request.Headers != null) {
-				_log.Debug(m => m("Creating HeadersSecurityEvaluator."));
+				Logger.Log("Creating HeadersSecurityEvaluator.");
 				return new HeadersSecurityEvaluator();
 			}
 
 			// Create a StandardSecurityEvaluator.
-			_log.Debug(m => m("Creating StandardSecurityEvaluator."));
+			Logger.Log("Creating StandardSecurityEvaluator.");
 			return new StandardSecurityEvaluator();
 		}
 	}

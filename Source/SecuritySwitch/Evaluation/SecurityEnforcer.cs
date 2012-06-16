@@ -9,8 +9,6 @@
 using System;
 using System.Text;
 
-using Common.Logging;
-
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
 
@@ -20,8 +18,6 @@ namespace SecuritySwitch.Evaluation {
 	/// The default implementation of ISecurityEnforcer.
 	/// </summary>
 	public class SecurityEnforcer : ISecurityEnforcer {
-		private static readonly ILog _log = LogManager.GetLogger<SecurityEnforcer>();
-		
 		private readonly ISecurityEvaluator _securityEvaluator;
 
 		public SecurityEnforcer(ISecurityEvaluator securityEvaluator) {
@@ -44,12 +40,12 @@ namespace SecuritySwitch.Evaluation {
 			string targetUrl = null;
 			
 			// Evaluate the request's security.
-			_log.Debug(m => m("Determining if the connection is secure."));
+			Logger.Log("Determining if the connection is secure.");
 			bool isSecureConnection = _securityEvaluator.IsSecureConnection(request, settings);
 
 			if (security == RequestSecurity.Secure && !isSecureConnection || 
 				security == RequestSecurity.Insecure && isSecureConnection) {
-				_log.Debug(m => m("Calculating the target URI to switch to."));
+				Logger.Log("Calculating the target URI to switch to.");
 
 				// Determine the target protocol and get any base target URL from the settings.
 				string targetProtocolScheme;

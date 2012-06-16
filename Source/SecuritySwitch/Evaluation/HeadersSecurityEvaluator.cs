@@ -9,8 +9,6 @@
 using System.Collections.Specialized;
 using System.Web;
 
-using Common.Logging;
-
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
 
@@ -20,8 +18,6 @@ namespace SecuritySwitch.Evaluation {
 	/// A security evaluator that looks for the presence of, or an expected value match with, one or more headers.
 	/// </summary>
 	public class HeadersSecurityEvaluator : NameValueCollectionSecurityEvaluator {
-		private static readonly ILog _log = LogManager.GetLogger<HeadersSecurityEvaluator>();
-
 		/// <summary>
 		/// Determines whether the specified request is over a secure connection.
 		/// </summary>
@@ -31,17 +27,15 @@ namespace SecuritySwitch.Evaluation {
 		///   <c>true</c> if the specified request is over a secure connection; otherwise, <c>false</c>.
 		/// </returns>
 		public override bool IsSecureConnection(HttpRequestBase request, Settings settings) {
-			_log.Debug(m => m("Checking for any header that matches one from OffloadedSecurityHeaders..."));
+			Logger.Log("Checking for any header that matches one from OffloadedSecurityHeaders...");
 
 			// Parse the expected security headers and check for each against the request headers.
 			NameValueCollection expectedSecurityHeaders = HttpUtility.ParseQueryString(settings.OffloadedSecurityHeaders);
 			bool isSecure = FindAnyNameValueMatch(expectedSecurityHeaders, request.Headers);
 
-			_log.Debug(
-				m =>
-				m(isSecure 
-					? "Header match found; connection is secure." 
-					: "No match found; connection is presumed not secure."));
+			Logger.Log(isSecure
+			           	? "Header match found; connection is secure."
+			           	: "No match found; connection is presumed not secure.");
 
 			return isSecure;
 		}
