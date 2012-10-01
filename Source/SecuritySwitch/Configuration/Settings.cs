@@ -63,6 +63,18 @@ namespace SecuritySwitch.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a flag indicating whether or not to ignore request for images.
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if images should be ignored; otherwise, <c>false</c>.
+		/// </value>
+		[ConfigurationProperty(ElementNames.IgnoreImages, DefaultValue = true)]
+		public bool IgnoreImages {
+			get { return (bool)this[ElementNames.IgnoreImages]; }
+			set { this[ElementNames.IgnoreImages] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a flag indicating whether or not to ignore requests for system handlers (*.axd paths).
 		/// </summary>
 		/// <value>
@@ -147,6 +159,44 @@ namespace SecuritySwitch.Configuration {
 		protected override void PostDeserialize() {
 			base.PostDeserialize();
 
+			Validate();
+
+			// Resolve any special tokens found in each PathSetting's path.
+			Logger.Log("Resolving any application relative tokens for all paths.");
+			foreach (PathSetting pathSetting in Paths) {
+				ResolveAppRelativeToken(pathSetting);
+			}
+
+			// Insert a special PathSetting to ignore images, if indicated.
+			if (IgnoreImages) {
+				Logger.Log("Inserting a new fallback path setting to ignore images.");
+				Paths.Insert(0,
+							 new PathSetting {
+								 Path = @"\.(?:bmp|gif|ico|jpe?g|png|svg|tiff?|webp|xbm)(?:[/\?#].*)?$",
+								 MatchType = PathMatchType.Regex,
+								 IgnoreCase = true,
+								 Security = RequestSecurity.Ignore
+							 });
+			}
+
+			// Insert a special PathSetting to ignore system handlers, if indicated.
+			if (IgnoreSystemHandlers) {
+				Logger.Log("Inserting a new path setting to ignore system handlers.");
+				Paths.Insert(0,
+							 new PathSetting {
+								 Path = @"\.axd(?:[/\?#].*)?$",
+								 MatchType = PathMatchType.Regex,
+								 IgnoreCase = true,
+								 Security = RequestSecurity.Ignore
+							 });
+			}
+		}
+
+		/// <summary>
+		/// Validates these settings. This method is called after the settings are deserialized from configuration.
+		/// </summary>
+		/// <exception cref="System.ApplicationException">Thrown if any settings property is not validate.</exception>
+		protected virtual void Validate() {
 			// Validate the base secure/insecure URI settings.
 			bool isBaseInsecureUriEmpty = string.IsNullOrEmpty(BaseInsecureUri);
 			bool isBaseSecureUriEmpty = string.IsNullOrEmpty(BaseSecureUri);
@@ -157,24 +207,6 @@ namespace SecuritySwitch.Configuration {
 			// Validate the SecurityPort, if specified.
 			if (SecurityPort.HasValue && (SecurityPort.Value < 1 || SecurityPort.Value > 65535)) {
 				throw new ApplicationException("If provided, securityPort must be a valid port number between 1 and 65535.");
-			}
-
-			// Resolve any special tokens found in each PathSetting's path.
-			Logger.Log("Resolving any application relative tokens for all paths.");
-			foreach (PathSetting pathSetting in Paths) {
-				ResolveAppRelativeToken(pathSetting);
-			}
-
-			// Insert a special PathSetting to ignore system handlers, if indicated.
-			if (IgnoreSystemHandlers) {
-				Logger.Log("Inserting a new path setting to ignore system handlers.");
-				Paths.Insert(0,
-				             new PathSetting {
-				             	Path = @"\.axd(?:[/\?#].*)?$",
-				             	MatchType = PathMatchType.Regex,
-				             	IgnoreCase = true,
-				             	Security = RequestSecurity.Ignore
-				             });
 			}
 		}
 

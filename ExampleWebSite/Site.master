@@ -6,8 +6,8 @@
 	<meta content="en-us" http-equiv="Content-Language" />
 	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 	<title>Security Switch Example Web Site</title>
-	<link href="Media/Styles/Baseline.css" rel="stylesheet" type="text/css" />
-	<link href="Media/Styles/Site.css" rel="stylesheet" type="text/css" />
+	<link href="/Media/Styles/Baseline.css" rel="stylesheet" type="text/css" />
+	<link href="/Media/Styles/Site.css" rel="stylesheet" type="text/css" />
 	<asp:ContentPlaceHolder ID="head" runat="server">
 	</asp:ContentPlaceHolder>
 </head>
@@ -15,7 +15,10 @@
 	<form id="siteForm" runat="server">
 		<div id="header">
 			<div id="loginStatus"><asp:LoginName runat="server" FormatString="Welcome, {0}! | " /> <asp:LoginStatus runat="server" /></div>
-			<h1>Security Switch Example Web Site</h1>
+			<h1>
+				<img src="/Media/Images/Logo.png" alt="Security Switch logo" />
+				Security Switch Example Web Site
+			</h1>
 		</div>
 		<div id="primaryNav">
 			<ul>

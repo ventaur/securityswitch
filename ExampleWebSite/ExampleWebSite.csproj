@@ -175,6 +175,7 @@
     <Content Include="Legal\Terms.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Manage\Default.aspx" />
+    <Content Include="Media\Images\Logo.png" />
     <Content Include="Media\Styles\Baseline.css" />
     <Content Include="Media\Styles\Site.css" />
   </ItemGroup>

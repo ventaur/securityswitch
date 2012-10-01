@@ -23,6 +23,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var settings = new TestSettings {
 				Mode = Mode.On,
 				IgnoreAjaxRequests = true,
+				IgnoreImages = true,
 				IgnoreSystemHandlers = true,
 				Paths = {
 					new TestPathSetting("/Info/ContactUs.aspx", PathMatchType.StartsWith, true, RequestSecurity.Insecure),

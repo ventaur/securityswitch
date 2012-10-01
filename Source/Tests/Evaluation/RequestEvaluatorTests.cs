@@ -44,7 +44,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			var security = requestEvaluator.Evaluate(mockRequest.Object, settings);
+			RequestSecurity security = requestEvaluator.Evaluate(mockRequest.Object, settings);
 
 			// Assert.
 			Assert.Equal(RequestSecurity.Ignore, security);
@@ -61,7 +61,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			var security = requestEvaluator.Evaluate(mockRequest.Object, settings);
+			RequestSecurity security = requestEvaluator.Evaluate(mockRequest.Object, settings);
 
 			// Assert.
 			Assert.Equal(RequestSecurity.Ignore, security);
@@ -78,7 +78,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			var security = requestEvaluator.Evaluate(mockRequest.Object, settings);
+			RequestSecurity security = requestEvaluator.Evaluate(mockRequest.Object, settings);
 
 			// Assert.
 			Assert.Equal(RequestSecurity.Ignore, security);
@@ -92,7 +92,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			var security = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			RequestSecurity security = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
 			// Assert.
 			Assert.Equal(RequestSecurity.Insecure, security);
@@ -106,7 +106,7 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			var security = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			RequestSecurity security = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
 			// Assert.
 			Assert.Equal(RequestSecurity.Secure, security);
@@ -131,21 +131,20 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			for (var index = 0; index < pathsToTest.Length; index++) {
-				var path = pathsToTest[index];
+			for (int index = 0; index < pathsToTest.Length; index++) {
+				string path = pathsToTest[index];
 				mockRequest.SetupGet(req => req.RawUrl).Returns(path);
 				results[index] = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 			}
 
 			// Assert.
-			Assert.NotEqual(RequestSecurity.Ignore, results[0]);
-			Assert.NotEqual(RequestSecurity.Ignore, results[1]);
-			Assert.NotEqual(RequestSecurity.Ignore, results[2]);
-			Assert.NotEqual(RequestSecurity.Ignore, results[3]);
-			Assert.Equal(RequestSecurity.Ignore, results[4]);
-			Assert.Equal(RequestSecurity.Ignore, results[5]);
-			Assert.Equal(RequestSecurity.Ignore, results[6]);
-			Assert.Equal(RequestSecurity.Ignore, results[7]);
+			for (int i = 0; i < 4; i++) {
+				Assert.NotEqual(RequestSecurity.Ignore, results[i]);
+			}
+
+			for (int i = 4; i < results.Length; i++) {
+				Assert.Equal(RequestSecurity.Ignore, results[i]);
+			}
 		}
 
 		[Fact]
@@ -156,21 +155,73 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var requestEvaluator = new RequestEvaluator();
 
 			// Act.
-			var resultForNonAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			RequestSecurity resultForNonAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
 			var queryString = new NameValueCollection {
 				{ RequestEvaluator.XRequestedWithHeaderKey, RequestEvaluator.AjaxRequestHeaderValue }
 			};
 			mockRequest.Setup(req => req.QueryString).Returns(queryString);
-			var resultForAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			RequestSecurity resultForAjaxRequest = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
 			_fixture.Settings.IgnoreAjaxRequests = false;
-			var resultForAjaxRequestWithIgnoreOff = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			RequestSecurity resultForAjaxRequestWithIgnoreOff = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
 
 			// Assert.
 			Assert.NotEqual(RequestSecurity.Ignore, resultForNonAjaxRequest);
 			Assert.Equal(RequestSecurity.Ignore, resultForAjaxRequest);
 			Assert.NotEqual(RequestSecurity.Ignore, resultForAjaxRequestWithIgnoreOff);
+		}
+
+		[Fact]
+		public void EvaluateReturnsIgnoreAppropriatelyWhenRequestPathIndicatesImage() {
+			// Arrange.
+			var pathsToTest = new[] {
+				"/non-typical-image.psd",
+				"/Media/Document.pdf",
+
+				"/Manage/Images/indicator-alert.bmp",
+				"/info/signs/sign1.gif",
+				"/faavicon.ico",
+				"/Media/logo.jpg",
+				"/Media/other-logo.jpeg",
+				"/SomeImage.png",
+				"/drawings/machine.design.svg",
+				"/Info/some-image.tiff",
+				"/Info/another-image.tif",
+				"/OtherResource.axd/resourceImage.webp",
+				"/OddBall.xbm",
+
+				"/Manage/Images/indicator-alert.bmp?someKey=someValue",
+				"/info/signs/sign1.gif#hash",
+				"/faavicon.ico?flag",
+				"/Media/logo.jpg?some-key=some-value&other-key=other-value",
+				"/Media/other-logo.jpeg?someKey=someValue#here",
+				"/SomeImage.png?someKey=someValue&otherKey=otherValue#here-nor-there",
+				"/drawings/machine.design.svg#hash.sub",
+				"/Info/some-image.tiff?some.key=some.value",
+				"/Info/another-image.tif?some.key=some.value#hash.sub",
+				"/OtherResource.axd/resourceImage.webp?",
+				"/OddBall.xbm?#"
+			};
+			var results = new RequestSecurity[pathsToTest.Length];
+			var mockRequest = new Mock<HttpRequestBase>();
+			var requestEvaluator = new RequestEvaluator();
+
+			// Act.
+			for (int index = 0; index < pathsToTest.Length; index++) {
+				string path = pathsToTest[index];
+				mockRequest.SetupGet(req => req.RawUrl).Returns(path);
+				results[index] = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			}
+
+			// Assert.
+			for (int i = 0; i < 2; i++) {
+				Assert.NotEqual(RequestSecurity.Ignore, results[i]);
+			}
+
+			for (int i = 2; i < results.Length; i++) {
+				Assert.Equal(RequestSecurity.Ignore, results[i]);
+			}
 		}
 	}
 }

@@ -6,3 +6,4 @@ NuGet/lib/*
 NuGet/*.nupkg
 packages/*
 ExampleWebSite/*log.txt
+TestResults/*
