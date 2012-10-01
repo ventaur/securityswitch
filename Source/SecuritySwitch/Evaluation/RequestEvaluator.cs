@@ -43,12 +43,14 @@ namespace SecuritySwitch.Evaluation {
 			// Find any matching path setting for the request.
 			Logger.Log("Checking for a matching path for this request...");
 			string requestPath = request.RawUrl;
-			foreach (PathSetting pathSetting in settings.Paths) {
-				// Get an appropriate path matcher and test the request's path for a match.
-				IPathMatcher matcher = PathMatcherFactory.Create(pathSetting.MatchType);
-				if (matcher.IsMatch(requestPath, pathSetting.Path, pathSetting.IgnoreCase)) {
-					Logger.LogFormat("Matching path found; security is {0}.", pathSetting.Security);
-					return pathSetting.Security;
+			if (!string.IsNullOrEmpty(requestPath)) {
+				foreach (PathSetting pathSetting in settings.Paths) {
+					// Get an appropriate path matcher and test the request's path for a match.
+					IPathMatcher matcher = PathMatcherFactory.Create(pathSetting.MatchType);
+					if (matcher.IsMatch(requestPath, pathSetting.Path, pathSetting.IgnoreCase)) {
+						Logger.LogFormat("Matching path found; security is {0}.", pathSetting.Security);
+						return pathSetting.Security;
+					}
 				}
 			}
 
