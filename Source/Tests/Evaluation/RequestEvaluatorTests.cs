@@ -223,5 +223,48 @@ namespace SecuritySwitch.Tests.Evaluation {
 				Assert.Equal(RequestSecurity.Ignore, results[i]);
 			}
 		}
+
+		[Fact]
+		public void EvaluateReturnsIgnoreAppropriatelyWhenRequestPathIndicatesStyleSheet() {
+			// Arrange.
+			var pathsToTest = new[] {
+				"/non-typical-image.psd",
+				"/Media/Document.pdf",
+
+				"/normalize.css",
+				"/Media/Styles/Site.css",
+
+				"/normalize.css?someKey=someValue",
+				"/Media/Styles/Site.css#hash",
+				"/normalize.css?flag",
+				"/Media/Styles/Site.css?some-key=some-value&other-key=other-value",
+				"/normalize.css?someKey=someValue#here",
+				"/Media/Styles/Site.css?someKey=someValue&otherKey=otherValue#here-nor-there",
+				"/normalize.alternative.css#hash.sub",
+				"/Media/Styles/Site.css?some.key=some.value",
+				"/normalize.css?some.key=some.value#hash.sub",
+				"/Media/Styles/Site.css/resourceImage.webp?",
+				"/normalize.css?#"
+			};
+			var results = new RequestSecurity[pathsToTest.Length];
+			var mockRequest = new Mock<HttpRequestBase>();
+			var requestEvaluator = new RequestEvaluator();
+
+			// Act.
+			for (int index = 0; index < pathsToTest.Length; index++) {
+				string path = pathsToTest[index];
+				mockRequest.SetupGet(req => req.RawUrl).Returns(path);
+				results[index] = requestEvaluator.Evaluate(mockRequest.Object, _fixture.Settings);
+			}
+
+			// Assert.
+			for (int i = 0; i < 2; i++) {
+				Assert.NotEqual(RequestSecurity.Ignore, results[i]);
+			}
+
+			for (int i = 2; i < results.Length; i++) {
+				Assert.Equal(RequestSecurity.Ignore, results[i]);
+			}
+		}
 	}
 }

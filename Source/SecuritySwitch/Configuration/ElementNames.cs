@@ -20,6 +20,7 @@ namespace SecuritySwitch.Configuration {
 		internal const string BypassSecurityWarning = "bypassSecurityWarning";
 		internal const string IgnoreAjaxRequests = "ignoreAjaxRequests";
 		internal const string IgnoreImages = "ignoreImages";
+		internal const string IgnoreStyleSheets = "ignoreStyleSheets";
 		internal const string IgnoreSystemHandlers = "ignoreSystemHandlers";
 		internal const string Mode = "mode";
 		internal const string OffloadedSecurityHeaders = "offloadedSecurityHeaders";

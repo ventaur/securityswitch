@@ -73,6 +73,18 @@ namespace SecuritySwitch.Configuration {
 			get { return (bool)this[ElementNames.IgnoreImages]; }
 			set { this[ElementNames.IgnoreImages] = value; }
 		}
+		
+		/// <summary>
+		/// Gets or sets a flag indicating whether or not to ignore request for style sheets.
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if style sheets should be ignored; otherwise, <c>false</c>.
+		/// </value>
+		[ConfigurationProperty(ElementNames.IgnoreStyleSheets, DefaultValue = true)]
+		public bool IgnoreStyleSheets {
+			get { return (bool)this[ElementNames.IgnoreStyleSheets]; }
+			set { this[ElementNames.IgnoreStyleSheets] = value; }
+		}
 
 		/// <summary>
 		/// Gets or sets a flag indicating whether or not to ignore requests for system handlers (*.axd paths).
@@ -169,10 +181,22 @@ namespace SecuritySwitch.Configuration {
 
 			// Insert a special PathSetting to ignore images, if indicated.
 			if (IgnoreImages) {
-				Logger.Log("Inserting a new fallback path setting to ignore images.");
+				Logger.Log("Inserting a new path setting to ignore images.");
 				Paths.Insert(0,
 							 new PathSetting {
 								 Path = @"\.(?:bmp|gif|ico|jpe?g|png|svg|tiff?|webp|xbm)(?:[/\?#].*)?$",
+								 MatchType = PathMatchType.Regex,
+								 IgnoreCase = true,
+								 Security = RequestSecurity.Ignore
+							 });
+			}
+
+			// Insert a special PathSetting to ignore style sheets, if indicated.
+			if (IgnoreStyleSheets) {
+				Logger.Log("Inserting a new path setting to ignore style sheets.");
+				Paths.Insert(0,
+							 new PathSetting {
+								 Path = @"\.css(?:[/\?#].*)?$",
 								 MatchType = PathMatchType.Regex,
 								 IgnoreCase = true,
 								 Security = RequestSecurity.Ignore
