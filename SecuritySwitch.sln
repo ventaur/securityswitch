@@ -1,8 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuritySwitch", "Source\SecuritySwitch\SecuritySwitch.csproj", "{73BDFCB9-B4EC-46E3-8028-AF13153AB210}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{BABBBE25-405F-4E26-9805-9BA9C188EEEB}"
 	ProjectSection(SolutionItems) = preProject
 		License.txt = License.txt
@@ -10,15 +8,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{BABBBE25-4
 		SecuritySwitch-v4.xsd = SecuritySwitch-v4.xsd
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Source\Tests\Tests.csproj", "{234055B7-42B2-4BEB-AB9E-0E36CFF6C305}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleWebSite", "ExampleWebSite\ExampleWebSite.csproj", "{EDE821AC-A302-4248-BDC8-CECEF7B68104}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{3A1FAFEC-8B1A-46ED-9F7C-B03EE7C83801}"
 	ProjectSection(SolutionItems) = preProject
 		NuGet\SecuritySwitch.nuspec = NuGet\SecuritySwitch.nuspec
 		NuGet\content\web.config.transform = NuGet\content\web.config.transform
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecuritySwitch", "Source\SecuritySwitch\SecuritySwitch.csproj", "{73BDFCB9-B4EC-46E3-8028-AF13153AB210}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Source\Tests\Tests.csproj", "{234055B7-42B2-4BEB-AB9E-0E36CFF6C305}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleWebSite", "ExampleWebSite\ExampleWebSite.csproj", "{EDE821AC-A302-4248-BDC8-CECEF7B68104}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
