@@ -44,6 +44,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Evaluation\PathMatcherFactoryTests.cs" />
     <Compile Include="Evaluation\PortSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\RegexPathMatcherTests.cs" />
