@@ -179,41 +179,9 @@ namespace SecuritySwitch.Configuration {
 				ResolveAppRelativeToken(pathSetting);
 			}
 
-			// Insert a special PathSetting to ignore images, if indicated.
-			if (IgnoreImages) {
-				Logger.Log("Inserting a new path setting to ignore images.");
-				Paths.Insert(0,
-							 new PathSetting {
-								 Path = @"\.(?:bmp|gif|ico|jpe?g|png|svg|tiff?|webp|xbm)(?:[/\?#].*)?$",
-								 MatchType = PathMatchType.Regex,
-								 IgnoreCase = true,
-								 Security = RequestSecurity.Ignore
-							 });
-			}
-
-			// Insert a special PathSetting to ignore style sheets, if indicated.
-			if (IgnoreStyleSheets) {
-				Logger.Log("Inserting a new path setting to ignore style sheets.");
-				Paths.Insert(0,
-							 new PathSetting {
-								 Path = @"\.css(?:[/\?#].*)?$",
-								 MatchType = PathMatchType.Regex,
-								 IgnoreCase = true,
-								 Security = RequestSecurity.Ignore
-							 });
-			}
-
-			// Insert a special PathSetting to ignore system handlers, if indicated.
-			if (IgnoreSystemHandlers) {
-				Logger.Log("Inserting a new path setting to ignore system handlers.");
-				Paths.Insert(0,
-							 new PathSetting {
-								 Path = @"\.axd(?:[/\?#].*)?$",
-								 MatchType = PathMatchType.Regex,
-								 IgnoreCase = true,
-								 Security = RequestSecurity.Ignore
-							 });
-			}
+			ConfigureForIgnoringImages();
+			ConfigureForIgnoringStyleSheets();
+			ConfigureForIgnoringSystemHandlers();
 		}
 
 		/// <summary>
@@ -234,6 +202,68 @@ namespace SecuritySwitch.Configuration {
 			}
 		}
 
+
+		private void ConfigureForIgnoringImages() {
+			// Insert a special PathSetting to ignore images, if indicated.
+			if (!IgnoreImages) {
+				return;
+			}
+
+			Logger.Log("Inserting a new path setting to ignore images.");
+			Paths.Insert(0,
+			             new PathSetting {
+				             Path = @"\.(?:bmp|gif|ico|jpe?g|png|svg|tiff?|webp|xbm)(?:[/\?#].*)?$",
+				             MatchType = PathMatchType.Regex,
+				             IgnoreCase = true,
+				             Security = RequestSecurity.Ignore
+			             });
+			Paths.Insert(0,
+			             new PathSetting {
+				             Path = @".*/images/.*$",
+				             MatchType = PathMatchType.Regex,
+				             IgnoreCase = true,
+				             Security = RequestSecurity.Ignore
+			             });
+		}
+
+		private void ConfigureForIgnoringStyleSheets() {
+			// Insert a special PathSetting to ignore style sheets, if indicated.
+			if (!IgnoreStyleSheets) {
+				return;
+			}
+
+			Logger.Log("Inserting a new path setting to ignore style sheets.");
+			Paths.Insert(0,
+			             new PathSetting {
+				             Path = @"\.css(?:[/\?#].*)?$",
+				             MatchType = PathMatchType.Regex,
+				             IgnoreCase = true,
+				             Security = RequestSecurity.Ignore
+			             });
+			Paths.Insert(0,
+			             new PathSetting {
+				             Path = @".*/(?:styles|stylesheets)/.*$",
+				             MatchType = PathMatchType.Regex,
+				             IgnoreCase = true,
+				             Security = RequestSecurity.Ignore
+			             });
+		}
+
+		private void ConfigureForIgnoringSystemHandlers() {
+			// Insert a special PathSetting to ignore system handlers, if indicated.
+			if (!IgnoreSystemHandlers) {
+				return;
+			}
+
+			Logger.Log("Inserting a new path setting to ignore system handlers.");
+			Paths.Insert(0,
+			             new PathSetting {
+				             Path = @"\.axd(?:[/\?#].*)?$",
+				             MatchType = PathMatchType.Regex,
+				             IgnoreCase = true,
+				             Security = RequestSecurity.Ignore
+			             });
+		}
 
 		/// <summary>
 		/// Resolves any application relative token (~/) to the application's virtual path.

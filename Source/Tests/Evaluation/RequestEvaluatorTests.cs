@@ -179,6 +179,11 @@ namespace SecuritySwitch.Tests.Evaluation {
 				"/non-typical-image.psd",
 				"/Media/Document.pdf",
 
+				"/Images/SomeService/",
+				"/Images/SomeService/?someKey=someValue",
+				"/images/img-handler.ashx",
+				"/images/img-handler.ashx?some-key=some-value",
+
 				"/Manage/Images/indicator-alert.bmp",
 				"/info/signs/sign1.gif",
 				"/faavicon.ico",
@@ -230,6 +235,11 @@ namespace SecuritySwitch.Tests.Evaluation {
 			var pathsToTest = new[] {
 				"/non-typical-image.psd",
 				"/Media/Document.pdf",
+
+				"/Styles/SomeService/",
+				"/StyleSheets/SomeService/?someKey=someValue",
+				"/styles/img-handler.ashx",
+				"/stylesheets/img-handler.ashx?some-key=some-value",
 
 				"/normalize.css",
 				"/Media/Styles/Site.css",
