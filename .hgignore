@@ -7,3 +7,4 @@ NuGet/*.nupkg
 packages/*
 ExampleWebSite/*log.txt
 TestResults/*
+Testing/*

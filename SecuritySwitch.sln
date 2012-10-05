@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{BABBBE25-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{3A1FAFEC-8B1A-46ED-9F7C-B03EE7C83801}"
 	ProjectSection(SolutionItems) = preProject
-		NuGet\SecuritySwitch.nuspec = NuGet\SecuritySwitch.nuspec
 		NuGet\content\web.config.transform = NuGet\content\web.config.transform
 	EndProjectSection
 EndProject
@@ -23,6 +22,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{53F8CCE2-742A-4653-AB7B-50B4C0FF796A}"
 	ProjectSection(SolutionItems) = preProject
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{30B7A3C9-617F-4096-9261-B5E0F9A4FE88}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
 Global

@@ -1,4 +1,4 @@
-Security Switch 4.1
+Security Switch 4.2
 ===================
 Security Switch enables various ASP.NET applications to automatically switch requests for pages/resources between the HTTP and HTTPS protocols without the need to write absolute URLs in HTML markup.
 

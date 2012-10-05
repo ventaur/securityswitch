@@ -1,15 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Default" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\ExtensionPack\4.0\MSBuild.ExtensionPack.VersionNumber.targets" />
-  <PropertyGroup>
-    <AssemblyMajorVersion>4</AssemblyMajorVersion>
-    <AssemblyFileMajorVersion>4</AssemblyFileMajorVersion>
-    <AssemblyMinorVersion>1</AssemblyMinorVersion>
-    <AssemblyFileMinorVersion>1</AssemblyFileMinorVersion>
-  </PropertyGroup>
-  <Target Name="Default" DependsOnTargets="Build">
-    <MSBuild.ExtensionPack.Framework.AssemblyInfo AssemblyInfoFiles="@(AssemblyInfoFiles)" StartDate="January 1, 2000" PaddingCount="1" AssemblyBuildNumberType="ElapsedDays" AssemblyFileBuildNumberType="ElapsedDays" />
-  </Target>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -107,66 +97,4 @@
     <Compile Include="Evaluation\StartsWithPathMatcher.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks" />
-  <PropertyGroup>
-    <SolutionDir Condition="'$(SolutionDir)' == '' or '$(SolutionDir)' == '*undefined*'">..\..\</SolutionDir>
-    <ConfigSchemaFileName>$(AssemblyName)-v4.xsd</ConfigSchemaFileName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Rerun)' != 'true' and '$(Configuration)' == 'Release'">
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)$(AssemblyName).snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <NuGetContentFiles Include="$(SolutionDir)$(ConfigSchemaFileName)">
-      <Visible>false</Visible>
-    </NuGetContentFiles>
-    <OutputFiles Include="$(OutDir)$(TargetFileName)">
-      <Visible>false</Visible>
-    </OutputFiles>
-  </ItemGroup>
-  <Target Name="BeforeBuild" Condition="'$(Configuration)' == 'Release'">
-    <Delete Files="@(IntermediateAssembly)" Condition="'$(SignAssembly)' != 'true'" />
-  </Target>
-  <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Release'">
-    <!-- Create the NuGet package only if the assembly is not strongly named. -->
-    <CallTarget Targets="CreateNuGetPackage" Condition="'$(SignAssembly)' != 'true'" />
-    <!-- Always create the download archive. -->
-    <CallTarget Targets="CreateDownloadArchive" />
-    <!-- Rebuild the assembly without a strong name, if strongly named this time. -->
-    <MSBuild Condition="'$(SignAssembly)' == 'true'" Projects="$(MSBuildProjectFile)" Properties="Rerun=true;SignAssembly=false;Configuration=$(Configuration);" />
-  </Target>
-  <Target Name="CreateNuGetPackage">
-    <GetAssemblyIdentity AssemblyFiles="$(OutDir)$(TargetFileName)">
-      <Output TaskParameter="Assemblies" ItemName="AssemblyInfo" />
-    </GetAssemblyIdentity>
-    <!-- Create NuGet package with the latest version. -->
-    <PropertyGroup>
-      <NuGetDir>$(SolutionDir)NuGet</NuGetDir>
-      <NuSpecFile>$(NuGetDir)\$(AssemblyName).nuspec</NuSpecFile>
-    </PropertyGroup>
-    <Copy SourceFiles="@(NuGetContentFiles)" DestinationFolder="$(NuGetDir)\content\" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="$(NuGetDir)\lib\" SkipUnchangedFiles="true" />
-    <XmlPoke XmlInputPath="$(NuSpecFile)" Query="//x:package/x:metadata/x:version" Value="%(AssemblyInfo.Version)" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd' /&gt;" />
-    <Exec Command="nuget pack &quot;$(NuSpecFile)&quot; -OutputDirectory &quot;$(NuGetDir)&quot;" />
-  </Target>
-  <Target Name="CreateDownloadArchive">
-    <GetAssemblyIdentity AssemblyFiles="$(OutDir)$(TargetFileName)">
-      <Output TaskParameter="Assemblies" ItemName="AssemblyInfo" />
-    </GetAssemblyIdentity>
-    <!-- Create download archive with the latest version. -->
-    <PropertyGroup Condition="'$(SignAssembly)' == 'true'">
-      <SN>Strongly Named </SN>
-    </PropertyGroup>
-    <PropertyGroup>
-      <DownloadsDir>$(SolutionDir)Downloads\</DownloadsDir>
-      <DownloadsWorkDir>$(DownloadsDir)Working\</DownloadsWorkDir>
-      <ArchiveFileName>$(DownloadsDir)$(AssemblyName) v%(AssemblyInfo.Version) - $(SN)Binary.zip</ArchiveFileName>
-    </PropertyGroup>
-    <ItemGroup>
-      <DownloadFiles Include="$(SolutionDir)*.txt;$(SolutionDir)$(ConfigSchemaFileName);$(OutDir)*.dll" />
-    </ItemGroup>
-    <RemoveDir Directories="$(DownloadsWorkDir)" />
-    <Copy SourceFiles="@(DownloadFiles)" DestinationFolder="$(DownloadsWorkDir)" />
-    <MSBuild.ExtensionPack.Compression.DNZip TaskAction="Create" CompressPath="$(DownloadsWorkDir)" ZipFileName="$(ArchiveFileName)" RemoveRoot="$(DownloadsWorkDir)" />
-  </Target>
 </Project>
