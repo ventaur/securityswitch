@@ -2,8 +2,12 @@ require 'albacore'
 require 'version_bumper'
 bumper_file "version.txt"
 
-# Read variables from environment/command-line.
-bumpType = ENV["bumptype"]
+# Read any atypical version bump type from environment/command-line.
+# e.g., rake bumpType=minor
+# bumpType=major -> 2.3.251.0 becomes 3.0.0.0
+# bumpType=minor -> 2.3.251.0 becomes 2.4.0.0
+# no bumpType specified -> 2.3.251.0 becomes 2.3.252.0
+bumpType = ENV["bumpType"] || 'revision'
 
 # Setup variables.
 assemblyName = "SecuritySwitch"
@@ -12,6 +16,7 @@ targetFile = "Source/SecuritySwitch/bin/Release/#{assemblyName}.dll"
 productName = "Security Switch"
 productDescription = ".NET libraries for automatically switching between HTTP and HTTPS protocols."
 productAuthors = "Matt Sollars"
+copyrightBeginYear = 2004
 
 nugetId = "SecuritySwitch"
 nugetDir = "NuGet/"
@@ -30,16 +35,24 @@ task :default => [:build, :pushNuGet]
 
 desc "Sets common assembly information."
 assemblyinfo :setAssemblyInfo do |asm|
-	Rake::Task['bump:major'].invoke if bumpType == 'major'
-	Rake::Task['bump:minor'].invoke if bumpType == 'minor'
-	Rake::Task['bump:revision'].invoke if bumpType.nil?
+	case bumpType
+		when 'major'
+			Rake::Task['bump:major'].invoke
+		when 'minor'
+			Rake::Task['bump:minor'].invoke
+		when 'revision'
+			Rake::Task['bump:revision'].invoke
+		else
+			puts "Unknown bumpType. Exiting."
+			exit 0
+	end
 	
 	asm.version = bumper_version.to_s
 	asm.file_version = bumper_version.to_s
 
 	now = Time.new
 	asm.product_name = productName
-	asm.copyright = "Copyright (c) 2004-#{now.year} #{productAuthors}"
+	asm.copyright = "Copyright (c) #{copyrightBeginYear}-#{now.year} #{productAuthors}"
 	asm.description = productDescription
 	
 	asm.com_visible = false
