@@ -11,7 +11,10 @@ bumpType = ENV["bumpType"] || 'revision'
 
 # Setup variables.
 assemblyName = "SecuritySwitch"
-targetFile = "Source/SecuritySwitch/bin/Release/#{assemblyName}.dll"
+projectDir = "Source/SecuritySwitch/"
+targetFile = "#{projectDir}bin/Release/#{assemblyName}.dll"
+targetStrongFile = "#{projectDir}bin/Strong/#{assemblyName}.dll"
+keyFile = "#{assemblyName}.snk"
 
 productName = "Security Switch"
 productDescription = ".NET libraries for automatically switching between HTTP and HTTPS protocols."
@@ -25,12 +28,14 @@ nuspecFile = "#{nugetDir}#{assemblyName}.nuspec"
 configSchemaFile = "#{assemblyName}-v#{bumper_version.major}.xsd"
 
 downloadsDir = "Downloads/"
+workingDir = "#{downloadsDir}Working"
 archiveName = "#{assemblyName} v#{bumper_version.to_s} - Binary"
+archiveStrongName = "#{assemblyName} v#{bumper_version.to_s} - Strongly Named Binary"
 
 
 # Start the build.
-task :default => [:build, :pushNuGet]
-#task :default => [:uploadArchives]
+task :default => [:build, :pushNuGet, :createArchives]
+#task :default => [:build, :pushNuGet, :uploadArchives]
 
 
 desc "Sets common assembly information."
@@ -42,6 +47,8 @@ assemblyinfo :setAssemblyInfo do |asm|
 			Rake::Task['bump:minor'].invoke
 		when 'revision'
 			Rake::Task['bump:revision'].invoke
+		when 'none'
+			# no-op
 		else
 			puts "Unknown bumpType. Exiting."
 			exit 0
@@ -64,6 +71,17 @@ msbuild :build => :setAssemblyInfo do |msb|
 	msb.properties = { :configuration => :Release }
 	msb.targets = [:Clean, :Build]
 	msb.solution = "SecuritySwitch.sln"
+end
+
+desc "Builds the solution for a new strongly named release."
+msbuild :buildStrong => :setAssemblyInfo do |msb|
+	msb.properties = { 
+		:configuration => :Strong, 
+		:signAssembly => "true", 
+		:assemblyOriginatorKeyFile => "../../#{keyFile}"
+	}
+	msb.targets = [:Build]
+	msb.solution = "#{projectDir}SecuritySwitch.csproj"
 end
 
 desc "Runs tests for solution."
@@ -105,14 +123,20 @@ nugetpush :pushNuGet => :packNuGet do |nuget|
 	nuget.package = "#{nugetDir}#{assemblyName}.#{bumper_version.to_s}.nupkg"
 end
 
-desc "Creates the download archives."
-zip :createArchives => :runTests do |zip|
-	workingDir = "#{downloadsDir}Working"
+
+desc "Sets up the working directory for archive creation."
+task :setupWorkingDir do
 	FileUtils.mkpath workingDir
+
+	FileUtils.rm Dir.glob("#{workingDir}/*")
 	
 	FileUtils.cp "License.txt", workingDir
 	FileUtils.cp "ReadMe.txt", workingDir
 	FileUtils.cp configSchemaFile, workingDir
+end
+
+desc "Creates the standard archive."
+zip :createStandardArchive do |zip|
 	FileUtils.cp targetFile, workingDir
 	
 	zip.directories_to_zip workingDir
@@ -121,6 +145,21 @@ zip :createArchives => :runTests do |zip|
 	
 	puts "Archive created: #{downloadsDir}#{archiveName}.zip"
 end
+
+desc "Creates the strongly named archive."
+zip :createStrongArchive do |zip|
+	FileUtils.cp targetStrongFile, workingDir
+	
+	zip.directories_to_zip workingDir
+	zip.output_file = "#{archiveStrongName}.zip"
+	zip.output_path = downloadsDir
+	
+	puts "Archive created: #{downloadsDir}#{archiveStrongName}.zip"
+end
+
+desc "Creates the download archives."
+task :createArchives => [:build, :runTests, :buildStrong, :setupWorkingDir, :createStandardArchive, :createStrongArchive]
+
 
 desc "Uploads the archive(s) to Google Code."
 #task :uploadArchives => :createArchives do
