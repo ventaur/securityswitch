@@ -8,3 +8,4 @@ packages/*
 ExampleWebSite/*log.txt
 TestResults/*
 Testing/*
+.nuget/NuGet.exe
