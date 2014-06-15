@@ -7,6 +7,8 @@
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
 
+using System;
+
 using SecuritySwitch.Abstractions;
 
 
@@ -24,6 +26,8 @@ namespace SecuritySwitch.Redirection {
 		public void Redirect(HttpResponseBase response, string url, bool bypassSecurityWarning) {
 			if (bypassSecurityWarning) {
 				Logger.Log("Bypassing security warning via a response header and JavaScript.");
+
+				url = JsEncodeUrl(url);
 
 				// Clear the current response buffer.
 				response.Clear();
@@ -48,6 +52,23 @@ namespace SecuritySwitch.Redirection {
 
 			// End the current response.
 			response.End();
+		}
+
+
+		private static string JsEncodeUrl(string url) {
+			const char QueryDelimiter = '?';
+
+			int queryIndex = url.IndexOf(QueryDelimiter);
+			if (queryIndex < 0) {
+				return url;
+			}
+
+			// Ensure the query string is JS encoded to prevent XSS attacks.
+			var uri = new Uri(url);
+			string mainPart = uri.AbsoluteUri.Substring(0, queryIndex);
+			string queryPart = uri.Query.Substring(1);
+
+			return string.Concat(mainPart, QueryDelimiter, Microsoft.Security.Application.Encoder.JavaScriptEncode(queryPart, false));
 		}
 	}
 }
