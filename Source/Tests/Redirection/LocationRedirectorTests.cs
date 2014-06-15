@@ -1,12 +1,11 @@
 // =================================================================================
-// Copyright © 2009 Axiom Forge, Inc.
+// Copyright © 2004 Matt Sollars
 // All rights reserved.
 // 
-// This code and information is confidential! It is not to re-produced or shared
-// with anyone outside of Axiom Forge unless express, written authorization has
-// been issued by an officer of the company.
+// This code and information is provided "as is" without warranty of any kind,
+// either expressed or implied, including, but not limited to, the implied 
+// warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
-
 using Moq;
 
 using SecuritySwitch.Abstractions;
