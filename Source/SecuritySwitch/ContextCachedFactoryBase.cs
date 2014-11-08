@@ -20,10 +20,16 @@ namespace SecuritySwitch {
 		[ThreadStatic]
 		private static TFactory _instance;
 
-		
+
+		internal TCreation ForcedCreation { get; set; }
+
 		protected abstract string CacheKey { get; }
 
 		protected TCreation GetCacheValue(HttpContextBase context) {
+			if (ForcedCreation != null) {
+				return ForcedCreation;
+			}
+
 			return context.Items[CacheKey] as TCreation;
 		}
 
