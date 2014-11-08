@@ -32,25 +32,25 @@ namespace ExampleWebSite {
 		#region Logging with log4net
 
 		// Get a log4net logger for SecuritySwitch actions.
-		private static readonly ILog _logger = LogManager.GetLogger("SecuritySwitch");
+		private static readonly ILog Logger = LogManager.GetLogger("SecuritySwitch");
 
 		private static void LogSecuritySwitchAction(string message, Logger.LogLevel logLevel) {
 			switch (logLevel) {
-				case Logger.LogLevel.Debug:
-					if (_logger.IsDebugEnabled) {
-						_logger.Debug(message);
+				case SecuritySwitch.Logger.LogLevel.Debug:
+					if (Logger.IsDebugEnabled) {
+						Logger.Debug(message);
 					}
 					break;
 
-				case Logger.LogLevel.Info:
-					if (_logger.IsInfoEnabled) {
-						_logger.Info(message);
+				case SecuritySwitch.Logger.LogLevel.Info:
+					if (Logger.IsInfoEnabled) {
+						Logger.Info(message);
 					}
 					break;
 
-				case Logger.LogLevel.Warn:
-					if (_logger.IsWarnEnabled) {
-						_logger.Warn(message);
+				case SecuritySwitch.Logger.LogLevel.Warn:
+					if (Logger.IsWarnEnabled) {
+						Logger.Warn(message);
 					}
 					break;
 			}
