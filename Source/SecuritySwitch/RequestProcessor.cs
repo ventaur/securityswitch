@@ -86,7 +86,7 @@ namespace SecuritySwitch {
 		/// <param name="context"></param>
 		/// <param name="settings"></param>
 		private void EnrichResponse(HttpContextBase context, Settings settings) {
-			IList<IResponseEnricher> enrichers = ResponseEnricherFactory.Instance.GetAll(context);
+			IEnumerable<IResponseEnricher> enrichers = ResponseEnricherFactory.Instance.GetAll(context);
 			if (enrichers == null) {
 				return;
 			}
