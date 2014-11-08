@@ -43,6 +43,7 @@ namespace SecuritySwitch.Tests {
 
 	public class TestSecuritySwitchModule : SecuritySwitchModule {
 		public new void ProcessRequest(HttpContextBase context) {
+			_settings = new Settings();
 			base.ProcessRequest(context);
 		}
 	}

@@ -27,6 +27,8 @@
 			<xs:attribute name="baseInsecureUri" type="xs:anyURI" />
 			<xs:attribute name="baseSecureUri" type="xs:anyURI" />
 			<xs:attribute name="bypassSecurityWarning" type="DotNetBoolean" />
+			<xs:attribute name="enableHsts" type="DotNetBoolean" />
+			<xs:attribute name="hstsMaxAge" type="xs:unsignedInt" />
 			<xs:attribute name="ignoreAjaxRequests" type="DotNetBoolean" />
 			<xs:attribute name="ignoreImages" type="DotNetBoolean" />
 			<xs:attribute name="ignoreStyleSheets" type="DotNetBoolean" />

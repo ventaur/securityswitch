@@ -17,6 +17,8 @@ namespace SecuritySwitch.Configuration {
 		internal const string BaseInsecureUri = "baseInsecureUri";
 		internal const string BaseSecureUri = "baseSecureUri";
 		internal const string BypassSecurityWarning = "bypassSecurityWarning";
+		internal const string EnableHsts = "enableHsts";
+		internal const string HstsMaxAge = "hstsMaxAge";
 		internal const string IgnoreAjaxRequests = "ignoreAjaxRequests";
 		internal const string IgnoreImages = "ignoreImages";
 		internal const string IgnoreStyleSheets = "ignoreStyleSheets";

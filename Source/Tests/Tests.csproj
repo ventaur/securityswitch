@@ -61,6 +61,7 @@
     <Compile Include="Evaluation\StandardSecurityEvaluatorTests.cs" />
     <Compile Include="Evaluation\StartsWithPathMatcherTests.cs" />
     <Compile Include="Evaluation\ExactPathMatcherTests.cs" />
+    <Compile Include="ResponseEnrichers\HstsResponseEnricherTests.cs" />
     <Compile Include="SecuritySwitchModuleTests.cs" />
     <Compile Include="TestSettings.cs" />
     <Compile Include="TestPathSetting.cs" />

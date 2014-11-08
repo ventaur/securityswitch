@@ -50,6 +50,30 @@ namespace SecuritySwitch.Configuration {
 		}
 
 		/// <summary>
+		/// Gets or sets a flag indicating whether or not to enable HSTS.
+		/// Enabling HTTP Strict Transport Security (HSTS) will have this module send 
+		/// a specific header on all HTTPS requests. The header sent is named 
+		/// "Strict-Transport-Security". It's value is set to "max-age=[HstsMaxAge]", 
+		/// where the max age value is that of the HstsMaxAge property/attribute.
+		/// </summary>
+		[ConfigurationProperty(ElementNames.EnableHsts, DefaultValue = false)]
+		public bool EnableHsts {
+			get { return (bool)this[ElementNames.EnableHsts]; }
+			set { this[ElementNames.EnableHsts] = value; }
+		}
+
+		/// <summary>
+		/// Gets or sets the maximum age value sent as part of the value for the 
+		/// "Strict-Transport-Security" header, if EnableHsts is true. The header 
+		/// value is set to "max-age=[HstsMaxAge]".
+		/// </summary>
+		[ConfigurationProperty(ElementNames.HstsMaxAge, DefaultValue = 31536000U)]
+		public uint HstsMaxAge {
+			get { return (uint)this[ElementNames.HstsMaxAge]; }
+			set { this[ElementNames.HstsMaxAge] = value; }
+		}
+
+		/// <summary>
 		/// Gets or sets a flag indicating whether or not to ignore AJAX requests.
 		/// </summary>
 		/// <value>

@@ -7,6 +7,7 @@
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
 using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Configuration;
 
@@ -14,6 +15,7 @@ using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
 using SecuritySwitch.Evaluation;
 using SecuritySwitch.Redirection;
+using SecuritySwitch.ResponseEnrichers;
 
 
 namespace SecuritySwitch {
@@ -22,7 +24,7 @@ namespace SecuritySwitch {
 	/// </summary>
 	public class SecuritySwitchModule : IHttpModule {
 		// Cached copy of the module's settings for reuse during this request.
-		private Settings _settings;
+		protected Settings _settings;
 
 
 		/// <summary>
@@ -104,17 +106,20 @@ namespace SecuritySwitch {
 
 			HttpRequestBase request = context.Request;
 			HttpResponseBase response = context.Response;
+			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
 
 			RequestSecurity expectedSecurity = EvaluateRequestViaHandlerOrEvaluator(context, request);
 			if (expectedSecurity == RequestSecurity.Ignore) {
 				// No redirect is needed for a result of Ignore.
+				EnrichResponse(response, request, securityEvaluator, _settings);
 				Logger.Log("Expected security is Ignore; done.", Logger.LogLevel.Info);
 				return;
 			}
 
-			string targetUrl = DetermineTargetUrl(request, response, expectedSecurity);
+			string targetUrl = DetermineTargetUrl(securityEvaluator, request, response, expectedSecurity);
 			if (string.IsNullOrEmpty(targetUrl)) {
 				// No redirect is needed for a null/empty target URL.
+				EnrichResponse(response, request, securityEvaluator, _settings);
 				Logger.Log("No target URI determined; done.", Logger.LogLevel.Info);
 				return;
 			}
@@ -159,16 +164,34 @@ namespace SecuritySwitch {
 		}
 
 		/// <summary>
+		/// Enriches the response as needed, based on the expected security and settings.
+		/// </summary>
+		/// <param name="response"></param>
+		/// <param name="securityEvaluator"></param>
+		/// <param name="settings"></param>
+		/// <param name="request"></param>
+		protected void EnrichResponse(HttpResponseBase response, HttpRequestBase request, ISecurityEvaluator securityEvaluator, Settings settings) {
+			IList<IResponseEnricher> enrichers = ResponseEnricherFactory.GetAll();
+			if (enrichers == null) {
+				return;
+			}
+
+			foreach (var enricher in enrichers) {
+				enricher.Enrich(response, request, securityEvaluator, settings);
+			}
+		}
+
+		/// <summary>
 		/// Determines a target URL (if any) for this request, based on the expected security.
 		/// </summary>
+		/// <param name="securityEvaluator"></param>
 		/// <param name="request"></param>
 		/// <param name="response"></param>
 		/// <param name="expectedSecurity"></param>
 		/// <returns></returns>
-		protected string DetermineTargetUrl(HttpRequestBase request, HttpResponseBase response, RequestSecurity expectedSecurity) {
+		protected string DetermineTargetUrl(ISecurityEvaluator securityEvaluator, HttpRequestBase request, HttpResponseBase response, RequestSecurity expectedSecurity) {
 			// Ensure the request matches the expected security.
 			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
-			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
 			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
 			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
 			return targetUrl;

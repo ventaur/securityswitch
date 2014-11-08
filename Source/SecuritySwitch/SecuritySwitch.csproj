@@ -102,8 +102,12 @@
     <Compile Include="Evaluation\RequestEvaluator.cs" />
     <Compile Include="Evaluation\RequestEvaluatorFactory.cs" />
     <Compile Include="Evaluation\SecurityEnforcer.cs" />
+    <Compile Include="ResponseEnrichers\HstsResponseEnricher.cs" />
+    <Compile Include="ResponseEnrichers\ResponseEnricherFactory.cs" />
+    <Compile Include="ResponseEnrichers\IResponseEnricher.cs" />
     <Compile Include="SecuritySwitchModule.cs" />
     <Compile Include="Evaluation\StartsWithPathMatcher.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
