@@ -14,14 +14,14 @@ namespace SecuritySwitch.Evaluation {
 	/// <summary>
 	/// A factory for ISecurityEvaluator.
 	/// </summary>
-	public class SecurityEvaluatorFactory : ContextCachedFactoryBase<SecurityEvaluatorFactory, ISecurityEvaluator> {
+	internal class SecurityEvaluatorFactory : ContextCachedFactoryBase<SecurityEvaluatorFactory, ISecurityEvaluator> {
 		protected override string CacheKey { get { return "SecuritySwitch.SecurityEvaluator"; } }
 		
 		/// <summary>
 		/// Gets a security evaluator.
 		/// </summary>
 		/// <returns></returns>
-		public ISecurityEvaluator Create(HttpContextBase context, Settings settings) {
+		internal ISecurityEvaluator Create(HttpContextBase context, Settings settings) {
 			var cachedValue = GetCacheValue(context);
 			if (cachedValue != null) {
 				return cachedValue;

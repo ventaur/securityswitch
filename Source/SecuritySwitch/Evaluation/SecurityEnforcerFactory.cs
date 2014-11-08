@@ -6,16 +6,27 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
+
+using SecuritySwitch.Abstractions;
+
+
 namespace SecuritySwitch.Evaluation {
-	/// <summary>
-	/// A factory for ISecurityEnforcer.
-	/// </summary>
-	public static class SecurityEnforcerFactory {
+	internal class SecurityEnforcerFactory : ContextCachedFactoryBase<SecurityEnforcerFactory, ISecurityEnforcer> {
+		protected override string CacheKey {
+			get { return "SecuritySwitch.SecurityEnforcer"; }
+		}
+
+
 		/// <summary>
 		/// Gets a security enforcer.
 		/// </summary>
 		/// <returns></returns>
-		public static ISecurityEnforcer Create(ISecurityEvaluator securityEvaluator) {
+		internal ISecurityEnforcer Create(HttpContextBase context, ISecurityEvaluator securityEvaluator) {
+			var enforcer = GetCacheValue(context);
+			if (enforcer != null) {
+				return enforcer;
+			}
+
 			Logger.Log("Creating SecurityEnforcer.");
 			return new SecurityEnforcer(securityEvaluator);
 		}

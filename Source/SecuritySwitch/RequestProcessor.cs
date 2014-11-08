@@ -16,7 +16,7 @@ using SecuritySwitch.ResponseEnrichers;
 
 
 namespace SecuritySwitch {
-	public class RequestProcessor {
+	internal class RequestProcessor {
 		private readonly Settings _settings;
 
 
@@ -51,7 +51,7 @@ namespace SecuritySwitch {
 				return;
 			}
 
-			Redirect(context.Response, targetUrl);
+			Redirect(context, targetUrl);
 		}
 
 
@@ -74,7 +74,7 @@ namespace SecuritySwitch {
 				expectedSecurity = evaluatorSecurity.Value;
 			} else {
 				// Evaluate this request with the configured settings, if necessary.
-				IRequestEvaluator requestEvaluator = RequestEvaluatorFactory.Create();
+				IRequestEvaluator requestEvaluator = RequestEvaluatorFactory.Instance.Create(context);
 				expectedSecurity = requestEvaluator.Evaluate(context.Request, _settings);
 			}
 			return expectedSecurity;
@@ -107,7 +107,7 @@ namespace SecuritySwitch {
 			// Ensure the request matches the expected security.
 			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
 			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Instance.Create(context, _settings);
-			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
+			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Instance.Create(context, securityEvaluator);
 			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(context.Request, context.Response, expectedSecurity, _settings);
 			return targetUrl;
 		}
@@ -115,13 +115,13 @@ namespace SecuritySwitch {
 		/// <summary>
 		/// Responds with a redirect to the target URL.
 		/// </summary>
-		/// <param name="response"></param>
+		/// <param name="context"></param>
 		/// <param name="targetUrl"></param>
-		private void Redirect(HttpResponseBase response, string targetUrl) {
+		private void Redirect(HttpContextBase context, string targetUrl) {
 			// Redirect.
 			Logger.Log("Redirecting the request.", Logger.LogLevel.Info);
-			ILocationRedirector redirector = LocationRedirectorFactory.Create();
-			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
+			ILocationRedirector redirector = LocationRedirectorFactory.Instance.Create(context);
+			redirector.Redirect(context.Response, targetUrl, _settings.BypassSecurityWarning);
 		}
 	}
 }

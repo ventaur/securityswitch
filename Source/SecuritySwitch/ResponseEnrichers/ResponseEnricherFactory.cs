@@ -12,12 +12,12 @@ using SecuritySwitch.Abstractions;
 
 
 namespace SecuritySwitch.ResponseEnrichers {
-	public class ResponseEnricherFactory : ContextCachedFactoryBase<ResponseEnricherFactory, IList<IResponseEnricher>> {
+	internal class ResponseEnricherFactory : ContextCachedFactoryBase<ResponseEnricherFactory, IList<IResponseEnricher>> {
 		protected override string CacheKey {
 			get { return "SecuritySwitch.ResponseEnrichers"; }
 		}
 
-		public IList<IResponseEnricher> GetAll(HttpContextBase context) {
+		internal IList<IResponseEnricher> GetAll(HttpContextBase context) {
 			var cachedEnrichers = GetCacheValue(context);
 			if (cachedEnrichers != null) {
 				return cachedEnrichers;

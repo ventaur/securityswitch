@@ -13,7 +13,7 @@ using SecuritySwitch.Abstractions;
 
 
 namespace SecuritySwitch {
-	public abstract class ContextCachedFactoryBase<TFactory, TCreation> 
+	internal abstract class ContextCachedFactoryBase<TFactory, TCreation> 
 		where TFactory : class, new()
 		where TCreation : class {
 		
@@ -33,7 +33,7 @@ namespace SecuritySwitch {
 		}
 
 
-		public static TFactory Instance {
+		internal static TFactory Instance {
 			get { return _instance ?? (_instance = new TFactory()); }
 		}
 	}

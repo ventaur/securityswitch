@@ -14,10 +14,7 @@ using SecuritySwitch.Configuration;
 
 
 namespace SecuritySwitch.Evaluation {
-	/// <summary>
-	/// A factory for PathMatchers.
-	/// </summary>
-	public static class PathMatcherFactory {
+	internal static class PathMatcherFactory {
 		const string CachedMatchersKey = "SecuritySwitch.Matchers";
 
 		/// <summary>

@@ -8,9 +8,12 @@
 // =================================================================================
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security;
 
 [assembly: AssemblyTitle("Security Switch")]
 
 [assembly: CLSCompliant(true)]
 [assembly: AllowPartiallyTrustedCallers]
+
+[assembly: InternalsVisibleTo("SecuritySwitch.Tests")]
