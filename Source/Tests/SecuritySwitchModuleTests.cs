@@ -17,7 +17,7 @@ using Xunit;
 namespace SecuritySwitch.Tests {
 	public class SecuritySwitchModuleTests {
 		[Fact]
-		public void EvaluateRequestInvoked() {
+		public void EvaluateRequestIsInvoked() {
 			// Arrange.
 			var mockContext = new Mock<HttpContextBase>();
 			var mockRequest = new Mock<HttpRequestBase>();
@@ -28,9 +28,9 @@ namespace SecuritySwitch.Tests {
 			var module = new TestSecuritySwitchModule();
 			var invoked = false;
 			module.EvaluateRequest += (sender, args) => {
-			                          	invoked = true;
-			                          	args.ExpectedSecurity = RequestSecurity.Ignore;
-			                          };
+				invoked = true;
+				args.ExpectedSecurity = RequestSecurity.Ignore;
+			};
 
 			// Act.
 			module.ProcessRequest(mockContext.Object);
@@ -42,9 +42,11 @@ namespace SecuritySwitch.Tests {
 
 
 	public class TestSecuritySwitchModule : SecuritySwitchModule {
-		public new void ProcessRequest(HttpContextBase context) {
-			_settings = new Settings();
-			base.ProcessRequest(context);
+		public void ProcessRequest(HttpContextBase context) {
+			var settings = new Settings();
+			var requestProcessor = new RequestProcessor(settings);
+
+			requestProcessor.Process(context, EvaluatorCallback);
 		}
 	}
 }

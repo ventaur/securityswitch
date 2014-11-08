@@ -7,15 +7,11 @@
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
 using System;
-using System.Collections.Generic;
 using System.Web;
 using System.Web.Configuration;
 
 using SecuritySwitch.Abstractions;
 using SecuritySwitch.Configuration;
-using SecuritySwitch.Evaluation;
-using SecuritySwitch.Redirection;
-using SecuritySwitch.ResponseEnrichers;
 
 
 namespace SecuritySwitch {
@@ -23,8 +19,8 @@ namespace SecuritySwitch {
 	/// Evaluates each request for the need to switch to HTTP/HTTPS.
 	/// </summary>
 	public class SecuritySwitchModule : IHttpModule {
-		// Cached copy of the module's settings for reuse during this request.
-		protected Settings _settings;
+		private Settings _settings;
+		private RequestProcessor _requestProcessor;
 
 
 		/// <summary>
@@ -56,6 +52,9 @@ namespace SecuritySwitch {
 				return;
 			}
 
+			Logger.Log("Creating RequestProcessor.");
+			_requestProcessor = new RequestProcessor(_settings);
+
 			// Hook the application's AcquireRequestState event.
 			// * This ensures that the session ID is available for cookie-less session processing.
 			// * I would rather hook sooner into the pipeline, but...
@@ -79,6 +78,20 @@ namespace SecuritySwitch {
 
 
 		/// <summary>
+		/// Raises the EvaluateRequest event and returns any result for the expected security.
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
+		protected RequestSecurity? EvaluatorCallback(HttpContextBase context) {
+			Logger.Log("Raising the EvaluateRequest event.", Logger.LogLevel.Info);
+			var eventArgs = new EvaluateRequestEventArgs(context, _settings);
+			InvokeEvaluateRequest(eventArgs);
+
+			return eventArgs.ExpectedSecurity;
+		}
+
+
+		/// <summary>
 		/// Processes the request, evaluating it for the need to redirect based on configured settings.
 		/// </summary>
 		/// <param name="sender">The sender.</param>
@@ -91,122 +104,20 @@ namespace SecuritySwitch {
 				return;
 			}
 
-			// Wrap the application's context (for testability) and process it.
+			// Wrap the application's context (for testability) and process the request.
 			var context = new HttpContextWrapper(application.Context);
-			ProcessRequest(context);
-		}
-
-
-		/// <summary>
-		/// Processes the request.
-		/// </summary>
-		/// <param name="context">The context in which the request to process is running.</param>
-		protected void ProcessRequest(HttpContextBase context) {
-			Logger.Log("Begin request processing.");
-
-			HttpRequestBase request = context.Request;
-			HttpResponseBase response = context.Response;
-			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
-
-			RequestSecurity expectedSecurity = EvaluateRequestViaHandlerOrEvaluator(context, request);
-			if (expectedSecurity == RequestSecurity.Ignore) {
-				// No redirect is needed for a result of Ignore.
-				EnrichResponse(response, request, securityEvaluator, _settings);
-				Logger.Log("Expected security is Ignore; done.", Logger.LogLevel.Info);
-				return;
-			}
-
-			string targetUrl = DetermineTargetUrl(securityEvaluator, request, response, expectedSecurity);
-			if (string.IsNullOrEmpty(targetUrl)) {
-				// No redirect is needed for a null/empty target URL.
-				EnrichResponse(response, request, securityEvaluator, _settings);
-				Logger.Log("No target URI determined; done.", Logger.LogLevel.Info);
-				return;
-			}
-
-			Redirect(response, targetUrl);
-		}
-
-		/// <summary>
-		/// Evaluates this request via any EvaluateRequest event handler(s) or an IRequestEvaluator.
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		protected RequestSecurity EvaluateRequestViaHandlerOrEvaluator(HttpContextBase context, HttpRequestBase request) {
-			// Raise the EvaluateRequest event and check if a subscriber indicated the security for the current request.
-			Logger.Log("Raising the EvaluateRequest event.", Logger.LogLevel.Info);
-			var eventArgs = new EvaluateRequestEventArgs(context, _settings);
-			InvokeEvaluateRequest(eventArgs);
-
-			RequestSecurity expectedSecurity;
-			if (eventArgs.ExpectedSecurity.HasValue) {
-				// Use the value returned by the EvaluateRequest event.
-				Logger.Log("Using the expected security value provided by EvaluateRequest handler.", Logger.LogLevel.Info);
-				expectedSecurity = eventArgs.ExpectedSecurity.Value;
-			} else {
-				// Evaluate this request with the configured settings, if necessary.
-				IRequestEvaluator requestEvaluator = RequestEvaluatorFactory.Create();
-				expectedSecurity = requestEvaluator.Evaluate(request, _settings);
-			}
-			return expectedSecurity;
+			_requestProcessor.Process(context, EvaluatorCallback);
 		}
 
 		/// <summary>
 		/// Raises the EvaluateRequest event.
 		/// </summary>
 		/// <param name="args">The EvaluateRequestEventArgs used by any event handler(s).</param>
-		protected void InvokeEvaluateRequest(EvaluateRequestEventArgs args) {
+		private void InvokeEvaluateRequest(EvaluateRequestEventArgs args) {
 			var handler = EvaluateRequest;
 			if (handler != null) {
 				handler(this, args);
 			}
-		}
-
-		/// <summary>
-		/// Enriches the response as needed, based on the expected security and settings.
-		/// </summary>
-		/// <param name="response"></param>
-		/// <param name="securityEvaluator"></param>
-		/// <param name="settings"></param>
-		/// <param name="request"></param>
-		protected void EnrichResponse(HttpResponseBase response, HttpRequestBase request, ISecurityEvaluator securityEvaluator, Settings settings) {
-			IList<IResponseEnricher> enrichers = ResponseEnricherFactory.GetAll();
-			if (enrichers == null) {
-				return;
-			}
-
-			foreach (var enricher in enrichers) {
-				enricher.Enrich(response, request, securityEvaluator, settings);
-			}
-		}
-
-		/// <summary>
-		/// Determines a target URL (if any) for this request, based on the expected security.
-		/// </summary>
-		/// <param name="securityEvaluator"></param>
-		/// <param name="request"></param>
-		/// <param name="response"></param>
-		/// <param name="expectedSecurity"></param>
-		/// <returns></returns>
-		protected string DetermineTargetUrl(ISecurityEvaluator securityEvaluator, HttpRequestBase request, HttpResponseBase response, RequestSecurity expectedSecurity) {
-			// Ensure the request matches the expected security.
-			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
-			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
-			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
-			return targetUrl;
-		}
-
-		/// <summary>
-		/// Responds with a redirect to the target URL.
-		/// </summary>
-		/// <param name="response"></param>
-		/// <param name="targetUrl"></param>
-		protected void Redirect(HttpResponseBase response, string targetUrl) {
-			// Redirect.
-			Logger.Log("Redirecting the request.", Logger.LogLevel.Info);
-			ILocationRedirector redirector = LocationRedirectorFactory.Create();
-			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
 		}
 	}
 
