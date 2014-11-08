@@ -35,27 +35,23 @@ namespace SecuritySwitch {
 		public void Process(HttpContextBase context, RequestEvaluatorCallback evaluatorCallback) {
 			Logger.Log("Begin request processing.");
 
-			HttpRequestBase request = context.Request;
-			HttpResponseBase response = context.Response;
-			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
-
-			RequestSecurity expectedSecurity = EvaluateRequestViaCallbackOrEvaluator(context, request, evaluatorCallback);
+			RequestSecurity expectedSecurity = EvaluateRequestViaCallbackOrEvaluator(context, evaluatorCallback);
 			if (expectedSecurity == RequestSecurity.Ignore) {
 				// No redirect is needed for a result of Ignore.
-				EnrichResponse(response, request, securityEvaluator, _settings);
+				EnrichResponse(context, _settings);
 				Logger.Log("Expected security is Ignore; done.", Logger.LogLevel.Info);
 				return;
 			}
 
-			string targetUrl = DetermineTargetUrl(securityEvaluator, request, response, expectedSecurity);
+			string targetUrl = DetermineTargetUrl(context, expectedSecurity);
 			if (string.IsNullOrEmpty(targetUrl)) {
 				// No redirect is needed for a null/empty target URL.
-				EnrichResponse(response, request, securityEvaluator, _settings);
+				EnrichResponse(context, _settings);
 				Logger.Log("No target URI determined; done.", Logger.LogLevel.Info);
 				return;
 			}
 
-			Redirect(response, targetUrl);
+			Redirect(context.Response, targetUrl);
 		}
 
 
@@ -63,10 +59,9 @@ namespace SecuritySwitch {
 		/// Evaluates this request via any request evaluator callback or an IRequestEvaluator.
 		/// </summary>
 		/// <param name="context"></param>
-		/// <param name="request"></param>
 		/// <param name="evaluatorCallback">A callback to a custom request evaluator.</param>
 		/// <returns></returns>
-		private RequestSecurity EvaluateRequestViaCallbackOrEvaluator(HttpContextBase context, HttpRequestBase request, RequestEvaluatorCallback evaluatorCallback) {
+		private RequestSecurity EvaluateRequestViaCallbackOrEvaluator(HttpContextBase context, RequestEvaluatorCallback evaluatorCallback) {
 			RequestSecurity? evaluatorSecurity = null;
 			if (evaluatorCallback != null) {
 				evaluatorSecurity = evaluatorCallback(context);
@@ -80,7 +75,7 @@ namespace SecuritySwitch {
 			} else {
 				// Evaluate this request with the configured settings, if necessary.
 				IRequestEvaluator requestEvaluator = RequestEvaluatorFactory.Create();
-				expectedSecurity = requestEvaluator.Evaluate(request, _settings);
+				expectedSecurity = requestEvaluator.Evaluate(context.Request, _settings);
 			}
 			return expectedSecurity;
 		}
@@ -88,34 +83,32 @@ namespace SecuritySwitch {
 		/// <summary>
 		/// Enriches the response as needed, based on the expected security and settings.
 		/// </summary>
-		/// <param name="response"></param>
-		/// <param name="securityEvaluator"></param>
+		/// <param name="context"></param>
 		/// <param name="settings"></param>
-		/// <param name="request"></param>
-		private void EnrichResponse(HttpResponseBase response, HttpRequestBase request, ISecurityEvaluator securityEvaluator, Settings settings) {
-			IList<IResponseEnricher> enrichers = ResponseEnricherFactory.GetAll();
+		private void EnrichResponse(HttpContextBase context, Settings settings) {
+			IList<IResponseEnricher> enrichers = ResponseEnricherFactory.Instance.GetAll(context);
 			if (enrichers == null) {
 				return;
 			}
 
+			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Instance.Create(context, _settings);
 			foreach (var enricher in enrichers) {
-				enricher.Enrich(response, request, securityEvaluator, settings);
+				enricher.Enrich(context.Response, context.Request, securityEvaluator, settings);
 			}
 		}
 
 		/// <summary>
 		/// Determines a target URL (if any) for this request, based on the expected security.
 		/// </summary>
-		/// <param name="securityEvaluator"></param>
-		/// <param name="request"></param>
-		/// <param name="response"></param>
+		/// <param name="context"></param>
 		/// <param name="expectedSecurity"></param>
 		/// <returns></returns>
-		private string DetermineTargetUrl(ISecurityEvaluator securityEvaluator, HttpRequestBase request, HttpResponseBase response, RequestSecurity expectedSecurity) {
+		private string DetermineTargetUrl(HttpContextBase context, RequestSecurity expectedSecurity) {
 			// Ensure the request matches the expected security.
 			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
+			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Instance.Create(context, _settings);
 			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
-			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
+			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(context.Request, context.Response, expectedSecurity, _settings);
 			return targetUrl;
 		}
 

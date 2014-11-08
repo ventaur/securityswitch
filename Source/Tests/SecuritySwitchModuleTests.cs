@@ -6,6 +6,9 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
+
+using System.Collections.Generic;
+
 using Moq;
 
 using SecuritySwitch.Abstractions;
@@ -22,6 +25,8 @@ namespace SecuritySwitch.Tests {
 			var mockContext = new Mock<HttpContextBase>();
 			var mockRequest = new Mock<HttpRequestBase>();
 			var mockResponse = new Mock<HttpResponseBase>();
+			var items = new Dictionary<object, object>();
+			mockContext.SetupGet(ctx => ctx.Items).Returns(items);
 			mockContext.SetupGet(ctx => ctx.Request).Returns(mockRequest.Object);
 			mockContext.SetupGet(ctx => ctx.Response).Returns(mockResponse.Object);
 

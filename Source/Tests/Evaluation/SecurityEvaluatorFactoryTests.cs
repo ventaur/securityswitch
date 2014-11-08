@@ -6,6 +6,9 @@
 // either expressed or implied, including, but not limited to, the implied 
 // warranties of merchantability and/or fitness for a particular purpose.
 // =================================================================================
+
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using Moq;
@@ -23,12 +26,16 @@ namespace SecuritySwitch.Tests.Evaluation {
 		public void CreateReturnsPortSecurityEvaluatorIfSecurityPortHasValue() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
+			var mockContext = new Mock<HttpContextBase>();
+			IDictionary items = new Dictionary<object, object>();
+			mockContext.Setup(c => c.Items).Returns(items);
+			mockContext.SetupGet(c => c.Request).Returns(mockRequest.Object);
 			var settings = new Settings {
 				SecurityPort = 81
 			};
 
 			// Act.
-			var evaluator = SecurityEvaluatorFactory.Create(mockRequest.Object, settings);
+			var evaluator = SecurityEvaluatorFactory.Instance.Create(mockContext.Object, settings);
 
 			// Assert.
 			Assert.IsType<PortSecurityEvaluator>(evaluator);
@@ -39,13 +46,17 @@ namespace SecuritySwitch.Tests.Evaluation {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
 			mockRequest.SetupGet(req => req.ServerVariables).Returns(new NameValueCollection());
-
+			var mockContext = new Mock<HttpContextBase>();
+			IDictionary items = new Dictionary<object, object>();
+			mockContext.Setup(c => c.Items).Returns(items);
+			mockContext.SetupGet(c => c.Request).Returns(mockRequest.Object);
+			
 			var settings = new Settings {
 				OffloadedSecurityServerVariables = "HTTP_X_FORWARD_PROTOCOL="
 			};
 
 			// Act.
-			var evaluator = SecurityEvaluatorFactory.Create(mockRequest.Object, settings);
+			var evaluator = SecurityEvaluatorFactory.Instance.Create(mockContext.Object, settings);
 
 			// Assert.
 			Assert.IsType<ServerVariablesSecurityEvaluator>(evaluator);
@@ -56,13 +67,17 @@ namespace SecuritySwitch.Tests.Evaluation {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
 			mockRequest.SetupGet(req => req.Headers).Returns(new NameValueCollection());
-
+			var mockContext = new Mock<HttpContextBase>();
+			IDictionary items = new Dictionary<object, object>();
+			mockContext.Setup(c => c.Items).Returns(items);
+			mockContext.SetupGet(c => c.Request).Returns(mockRequest.Object);
+			
 			var settings = new Settings {
 				OffloadedSecurityHeaders = "SSL="
 			};
 
 			// Act.
-			var evaluator = SecurityEvaluatorFactory.Create(mockRequest.Object, settings);
+			var evaluator = SecurityEvaluatorFactory.Instance.Create(mockContext.Object, settings);
 
 			// Assert.
 			Assert.IsType<HeadersSecurityEvaluator>(evaluator);
@@ -72,10 +87,14 @@ namespace SecuritySwitch.Tests.Evaluation {
 		public void CreateReturnsStandardSecurityEvaluatorIfSecurityPortNotSpecifiedAndServerVariablesNotExpectedAndHeadersNotExpected() {
 			// Arrange.
 			var mockRequest = new Mock<HttpRequestBase>();
+			var mockContext = new Mock<HttpContextBase>();
+			IDictionary items = new Dictionary<object, object>();
+			mockContext.Setup(c => c.Items).Returns(items);
+			mockContext.SetupGet(c => c.Request).Returns(mockRequest.Object);
 			var settings = new Settings();
 
 			// Act.
-			var evaluator = SecurityEvaluatorFactory.Create(mockRequest.Object, settings);
+			var evaluator = SecurityEvaluatorFactory.Instance.Create(mockContext.Object, settings);
 
 			// Assert.
 			Assert.IsType<StandardSecurityEvaluator>(evaluator);

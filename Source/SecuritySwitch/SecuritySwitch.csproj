@@ -78,6 +78,7 @@
     <Compile Include="Configuration\PathSettingCollection.cs" />
     <Compile Include="Configuration\Enums.cs" />
     <Compile Include="Configuration\Settings.cs" />
+    <Compile Include="ContextCachedFactoryBase.cs" />
     <Compile Include="EvaluateRequestEventArgs.cs" />
     <Compile Include="Evaluation\ISecurityEvaluator.cs" />
     <Compile Include="Evaluation\HeadersSecurityEvaluator.cs" />

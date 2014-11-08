@@ -14,33 +14,40 @@ namespace SecuritySwitch.Evaluation {
 	/// <summary>
 	/// A factory for ISecurityEvaluator.
 	/// </summary>
-	public static class SecurityEvaluatorFactory {
+	public class SecurityEvaluatorFactory : ContextCachedFactoryBase<SecurityEvaluatorFactory, ISecurityEvaluator> {
+		protected override string CacheKey { get { return "SecuritySwitch.SecurityEvaluator"; } }
+		
 		/// <summary>
 		/// Gets a security evaluator.
 		/// </summary>
 		/// <returns></returns>
-		public static ISecurityEvaluator Create(HttpRequestBase request, Settings settings) {
+		public ISecurityEvaluator Create(HttpContextBase context, Settings settings) {
+			var cachedValue = GetCacheValue(context);
+			if (cachedValue != null) {
+				return cachedValue;
+			}
+
 			// If a security port is configured, create a PortSecurityEvaluator.
 			if (settings.SecurityPort.HasValue) {
 				Logger.Log("Creating PortSecurityEvaluator.");
-				return new PortSecurityEvaluator();
+				return SetCacheValue(new PortSecurityEvaluator(), context);
 			}
 
 			// If security server variables are expected, and server variables exist, create a ServerVariablesSecurityEvaluator.
-			if (!string.IsNullOrEmpty(settings.OffloadedSecurityServerVariables) && request.ServerVariables != null) {
+			if (!string.IsNullOrEmpty(settings.OffloadedSecurityServerVariables) && context.Request.ServerVariables != null) {
 				Logger.Log("Creating ServerVariablesSecurityEvaluator.");
-				return new ServerVariablesSecurityEvaluator();
+				return SetCacheValue(new ServerVariablesSecurityEvaluator(), context);
 			}
 			
 			// If security headers are expected, and headers exist, create a HeadersSecurityEvaluator.
-			if (!string.IsNullOrEmpty(settings.OffloadedSecurityHeaders) && request.Headers != null) {
+			if (!string.IsNullOrEmpty(settings.OffloadedSecurityHeaders) && context.Request.Headers != null) {
 				Logger.Log("Creating HeadersSecurityEvaluator.");
-				return new HeadersSecurityEvaluator();
+				return SetCacheValue(new HeadersSecurityEvaluator(), context);
 			}
 
 			// Create a StandardSecurityEvaluator.
 			Logger.Log("Creating StandardSecurityEvaluator.");
-			return new StandardSecurityEvaluator();
+			return SetCacheValue(new StandardSecurityEvaluator(), context);
 		}
 	}
 }

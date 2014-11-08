@@ -8,21 +8,27 @@
 // =================================================================================
 using System.Collections.Generic;
 
+using SecuritySwitch.Abstractions;
+
 
 namespace SecuritySwitch.ResponseEnrichers {
-	public static class ResponseEnricherFactory {
-		private static List<IResponseEnricher> _enrichers;
+	public class ResponseEnricherFactory : ContextCachedFactoryBase<ResponseEnricherFactory, IList<IResponseEnricher>> {
+		protected override string CacheKey {
+			get { return "SecuritySwitch.ResponseEnrichers"; }
+		}
 
-		public static IList<IResponseEnricher> GetAll() {
-			if (_enrichers == null) {
-				Logger.Log("Creating all response enrichers.");
-				Logger.Log("    - creating HstsResponseEnricher");
-				_enrichers = new List<IResponseEnricher> {
-					new HstsResponseEnricher()
-				};
+		public IList<IResponseEnricher> GetAll(HttpContextBase context) {
+			var cachedEnrichers = GetCacheValue(context);
+			if (cachedEnrichers != null) {
+				return cachedEnrichers;
 			}
 
-			return _enrichers;
+			Logger.Log("Creating all response enrichers.");
+			Logger.Log("    - creating HstsResponseEnricher");
+			var enrichers = new List<IResponseEnricher> {
+				new HstsResponseEnricher()
+			};
+			return SetCacheValue(enrichers, context);
 		}
 	}
 }
