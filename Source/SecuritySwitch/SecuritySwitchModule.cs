@@ -26,6 +26,12 @@ namespace SecuritySwitch {
 
 
 		/// <summary>
+		/// Raised before the SecureSwitchModule evaluates the current request to allow subscribers a chance to evaluate the request.
+		/// </summary>
+		public event EvaluateRequestEventHandler EvaluateRequest;
+
+
+		/// <summary>
 		/// Initializes a module and prepares it to handle requests.
 		/// </summary>
 		/// <param name="context">
@@ -88,6 +94,7 @@ namespace SecuritySwitch {
 			ProcessRequest(context);
 		}
 
+
 		/// <summary>
 		/// Processes the request.
 		/// </summary>
@@ -98,6 +105,30 @@ namespace SecuritySwitch {
 			HttpRequestBase request = context.Request;
 			HttpResponseBase response = context.Response;
 
+			RequestSecurity expectedSecurity = EvaluateRequestViaHandlerOrEvaluator(context, request);
+			if (expectedSecurity == RequestSecurity.Ignore) {
+				// No redirect is needed for a result of Ignore.
+				Logger.Log("Expected security is Ignore; done.", Logger.LogLevel.Info);
+				return;
+			}
+
+			string targetUrl = DetermineTargetUrl(request, response, expectedSecurity);
+			if (string.IsNullOrEmpty(targetUrl)) {
+				// No redirect is needed for a null/empty target URL.
+				Logger.Log("No target URI determined; done.", Logger.LogLevel.Info);
+				return;
+			}
+
+			Redirect(response, targetUrl);
+		}
+
+		/// <summary>
+		/// Evaluates this request via any EvaluateRequest event handler(s) or an IRequestEvaluator.
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		protected RequestSecurity EvaluateRequestViaHandlerOrEvaluator(HttpContextBase context, HttpRequestBase request) {
 			// Raise the EvaluateRequest event and check if a subscriber indicated the security for the current request.
 			Logger.Log("Raising the EvaluateRequest event.", Logger.LogLevel.Info);
 			var eventArgs = new EvaluateRequestEventArgs(context, _settings);
@@ -113,35 +144,8 @@ namespace SecuritySwitch {
 				IRequestEvaluator requestEvaluator = RequestEvaluatorFactory.Create();
 				expectedSecurity = requestEvaluator.Evaluate(request, _settings);
 			}
-
-			if (expectedSecurity == RequestSecurity.Ignore) {
-				// No action is needed for a result of Ignore.
-				Logger.Log("Expected security is Ignore; done.", Logger.LogLevel.Info);
-				return;
-			}
-
-			// Ensure the request matches the expected security.
-			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
-			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
-			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
-			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
-			if (string.IsNullOrEmpty(targetUrl)) {
-				// No action is needed if the security enforcer did not return a target URL.
-				Logger.Log("No target URI determined; done.", Logger.LogLevel.Info);
-				return;
-			}
-
-			// Redirect.
-			Logger.Log("Redirecting the request.", Logger.LogLevel.Info);
-			ILocationRedirector redirector = LocationRedirectorFactory.Create();
-			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
+			return expectedSecurity;
 		}
-
-
-		/// <summary>
-		/// Raised before the SecureSwitchModule evaluates the current request to allow subscribers a chance to evaluate the request.
-		/// </summary>
-		public event EvaluateRequestEventHandler EvaluateRequest;
 
 		/// <summary>
 		/// Raises the EvaluateRequest event.
@@ -152,6 +156,34 @@ namespace SecuritySwitch {
 			if (handler != null) {
 				handler(this, args);
 			}
+		}
+
+		/// <summary>
+		/// Determines a target URL (if any) for this request, based on the expected security.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="response"></param>
+		/// <param name="expectedSecurity"></param>
+		/// <returns></returns>
+		protected string DetermineTargetUrl(HttpRequestBase request, HttpResponseBase response, RequestSecurity expectedSecurity) {
+			// Ensure the request matches the expected security.
+			Logger.Log("Determining the URI for the expected security.", Logger.LogLevel.Info);
+			ISecurityEvaluator securityEvaluator = SecurityEvaluatorFactory.Create(request, _settings);
+			ISecurityEnforcer securityEnforcer = SecurityEnforcerFactory.Create(securityEvaluator);
+			string targetUrl = securityEnforcer.GetUriForMatchedSecurityRequest(request, response, expectedSecurity, _settings);
+			return targetUrl;
+		}
+
+		/// <summary>
+		/// Responds with a redirect to the target URL.
+		/// </summary>
+		/// <param name="response"></param>
+		/// <param name="targetUrl"></param>
+		protected void Redirect(HttpResponseBase response, string targetUrl) {
+			// Redirect.
+			Logger.Log("Redirecting the request.", Logger.LogLevel.Info);
+			ILocationRedirector redirector = LocationRedirectorFactory.Create();
+			redirector.Redirect(response, targetUrl, _settings.BypassSecurityWarning);
 		}
 	}
 
