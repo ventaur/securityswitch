@@ -67,9 +67,9 @@ namespace SecuritySwitch.Configuration {
 		/// "Strict-Transport-Security" header, if EnableHsts is true. The header 
 		/// value is set to "max-age=[HstsMaxAge]".
 		/// </summary>
-		[ConfigurationProperty(ElementNames.HstsMaxAge, DefaultValue = 31536000U)]
-		public uint HstsMaxAge {
-			get { return (uint)this[ElementNames.HstsMaxAge]; }
+		[ConfigurationProperty(ElementNames.HstsMaxAge, DefaultValue = 31536000)]
+		public int HstsMaxAge {
+			get { return (int)this[ElementNames.HstsMaxAge]; }
 			set { this[ElementNames.HstsMaxAge] = value; }
 		}
 
@@ -217,6 +217,11 @@ namespace SecuritySwitch.Configuration {
 			bool isBaseSecureUriEmpty = string.IsNullOrEmpty(BaseSecureUri);
 			if (!isBaseInsecureUriEmpty && isBaseSecureUriEmpty || isBaseInsecureUriEmpty && !isBaseSecureUriEmpty) {
 				throw new ApplicationException("If either baseInsecureUri or baseSecureUri are specified, then both must be provided.");
+			}
+
+			// Validate the HstsMaxAge.
+			if (HstsMaxAge < 0) {
+				throw new ApplicationException("hstsMaxAge cannot be negative.");
 			}
 
 			// Validate the SecurityPort, if specified.
