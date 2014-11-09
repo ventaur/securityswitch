@@ -1,4 +1,4 @@
-Security Switch 4.3
+Security Switch 4.4
 ===================
 Security Switch enables various ASP.NET applications to automatically switch requests for pages/resources between the HTTP and HTTPS protocols without the need to write absolute URLs in HTML markup.
 
@@ -73,6 +73,8 @@ Attribute Name                    Data Type   Default Value   Allowed Values
 baseInsecureUri                   string      [null]          any valid URI
 baseSecureUri                     string      [null]          any valid URI
 bypassSecurityWarning             bool        false           true, false
+enableHsts                        bool        false           true, false
+hstsMaxAge                        int         31536000        maximum age to maintain STS
 ignoreAjaxRequests                bool        false           true, false
 ignoreImages                      bool        true            true, false
 ignoreStyleSheets                 bool        true            true, false
@@ -89,6 +91,10 @@ Likewise, set baseInsecureUri to a valid URI when you have supplied a value for 
 If either baseSecureUri or baseInsecureUri are set, you must provide both values. The module needs to know how to switch back when necessary and will use the other base URI to accomplish that.
 
 Set bypassSecurityWarning to true when you wish to attempt to avoid browser warnings about switching from HTTPS to HTTP. Many browsers alert visitors when a server issues a redirect request that would remove the user from HTTPS. This is not necessarily a bad feature in browsers. However, some website owners/developers wish to avoid such security warnings when possible. When bypassSecurityWarning is true, the module will forgo the usual practice of issuing a formal redirect and, instead, will output a "Refresh" header followed by some JavaScript to change the visitor's location. A refresh header is not a standard HTTP header. However, many browsers do honor it and "refresh" the current location with the specified URL after a timeout. The module sets the URL to the appropriate redirect location with a timeout of 0 (immediately). In addition, a small JavaScript block is output to the browser as backup. If the browser does not honor the refresh header, the script will set the window's location to the appropriate URL.
+
+When enableHsts is true, the "Strict-Transport-Security" header will be sent with all secure (HTTPS) respones. The max-age set for this header will be the hstsMaxAge value. For more information about HSTS, see https://www.owasp.org/index.php/HTTP_Strict_Transport_Security.
+
+If the "Strict-Transport-Security" header is sent with a response, the hstsMaxAge value is used to build the header value. For example, if hstsMaxAge is set to 30, the header value sent will be "max-age=30".
 
 Setting ignoreAjaxRequests to true will have the module ignore all AJAX requests, regardless of the request's path. When true, this setting overrides any matching path's settings if the request is made via AJAX. If false, the module will process the request like all others by checking for any matching path.
 

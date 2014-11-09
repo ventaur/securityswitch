@@ -1,4 +1,4 @@
-require 'albacore'
+require 'albacore' #0.3.6
 require 'version_bumper'
 bumper_file "version.txt"
 
