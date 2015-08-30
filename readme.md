@@ -4,15 +4,16 @@ Security Switch enables various ASP.NET applications to automatically switch req
 
 With deprecated support for ASP.NET 1.1 (via version 2.x) and full support for ASP.NET 2 and higher, you can easily configure what pages/resources should be secured via your website's SSL certificate. This is accomplished through the configuration of an ASP.NET module (IHttpModule).
 
-
-Special Note:
-Security Switch is the new name for the old SecureWebPageModule library written for an article on The Code Project.
+_Special Note:_ Security Switch is the new name for the old SecureWebPageModule library written for an article on The Code Project.
 
 
 Configuration
 -------------
+_If you install Security Switch via NuGet ("Install-Package SecuritySwitch"), the configuration will be taken care of for you after the package installs. Feel free to skip this section._
+
 Configuring Security Switch is a simple process. Open the web.config file for your web application, or website, and the following lines where indicated.
 
+```xml
 <configuration>
 	...
 	<configSections>
@@ -48,41 +49,40 @@ Configuring Security Switch is a simple process. Open the web.config file for yo
 	</system.webServer>
 	...
 </configuration>
-
+```
 
 First, add a new section definition to the configSections element collection. This tells ASP.NET that it can expect to see a section further down named, "securitySwitch". Next, add the aforementioned section. The securitySwitch section is where you will actually configure the module. For now, we set mode to "RemoteOnly" and add an entry to paths for the Login.aspx page (more on these settings later). Finally, add the module entry to either system.Web/httpModules (for IIS <= 6.x, IIS 7.x with Classic Mode enabled, and the Web Development Server/Cassini), system.webServer/modules (for IIS 7.x with Integrated Mode enabled), or both. The excerpt above adds the module to both sections and adds the system.webServer/validation element to prevent IIS from complaining about the entry added to system.web/httpModules.
 
 Another important step that many people forget is to include the SecuritySwitch assembly. Just copy the SecuritySwitch.dll assembly into your site's bin folder, or add a reference to the assembly in your project.
 
-
-The securitySwitch Section
-··························
+###The securitySwitch Section
 Configuration of the module is done via the securitySwitch section of a web.config file. The main element has several attributes itself, but none are required. The following section declaration is perfectly valid and will enable the module with all defaults. Note, the paths element and at least one add element entry within it are required.
 
+```xml
 <securitySwitch>
 	<paths>
 		...
 	</paths>
 </securitySwitch>
-
+```
 
 The securitySwitch element may have the following attributes set to an allowed value, as also defined below.
 
-Attribute Name                    Data Type   Default Value   Allowed Values
--------------------------------------------------------------------------------------------------
-baseInsecureUri                   string      [null]          any valid URI
-baseSecureUri                     string      [null]          any valid URI
-bypassSecurityWarning             bool        false           true, false
-enableHsts                        bool        false           true, false
-hstsMaxAge                        int         31536000        maximum age to maintain STS
-ignoreAjaxRequests                bool        false           true, false
-ignoreImages                      bool        true            true, false
-ignoreStyleSheets                 bool        true            true, false
-ignoreSystemHandlers              bool        true            true, false
-mode                              Mode        On              On, RemoteOnly, LocalOnly, Off
-offloadedSecurityHeaders          string      [null]          query string like name/value pairs
-offloadedSecurityServerVariables  string      [null]          query string like name/value pairs
-securityPort                      int?        [null]          port indicating secure connection
+Attribute Name                   | Data Type  | Default Value  | Allowed Values
+---------------------------------|------------|----------------|------------------------------------
+baseInsecureUri                  | string     | [null]         | any valid URI
+baseSecureUri                    | string     | [null]         | any valid URI
+bypassSecurityWarning            | bool       | false          | true, false
+enableHsts                       | bool       | false          | true, false
+hstsMaxAge                       | int        | 31536000       | maximum age to maintain STS
+ignoreAjaxRequests               | bool       | false          | true, false
+ignoreImages                     | bool       | true           | true, false
+ignoreStyleSheets                | bool       | true           | true, false
+ignoreSystemHandlers             | bool       | true           | true, false
+mode                             | Mode       | On             | On, RemoteOnly, LocalOnly, Off
+offloadedSecurityHeaders         | string     | [null]         | query string like name/value pairs
+offloadedSecurityServerVariables | string     | [null]         | query string like name/value pairs
+securityPort                     | int?       | [null]         | port indicating secure connection
 
 Set baseSecureUri to a valid URI when you do not have an SSL certificate installed on the same domain as your standard site (accessed via HTTP) or if your server is setup to serve HTTPS on a non-standard port (a port other than 443). Setting baseSecureUri will instruct the module to redirect any requests that need to switch from HTTP to HTTPS to a URI that starts with the baseSecureUri. For example, if baseSecureUri is "https://secure.mysite.com" and a request for http://www.mysite.com/Login.aspx is made (and Login.aspx is configured to be secure), the module will redirect visitors to https://secure.mysite.com/Login.aspx. Similarly, if baseSecureUri is "https://secure.somehostingsite.com/mysite", visitors would be redirected to https://secure.somehostingsite.com/mysite/Login.aspx.
 
@@ -112,10 +112,10 @@ Use offloadedSecurityServerVariables to designate server variables that may be p
 
 Use securityPort to indicate a port that must match a request's port in order for the module to consider the request is over a secure connection.
 
-Paths
-~~~~~
+####Paths
 Within the securitySwitch section element, there should be a paths element. The paths element is a collection of entries that tell the module how to handle certain requests. Adding path entries should be familiar to most ASP.NET developers. Each element in the paths collection is an "add" element, with attributes itself. Below is an example of a few path entries.
 
+```xml
 <securitySwitch>
 	<paths>
 		<add path="~/Info/Contact.aspx" matchType="Exact" />
@@ -130,6 +130,7 @@ Within the securitySwitch section element, there should be a paths element. The 
 		<add path="~/Cms/Default\.aspx\?([a-zA-Z0-9\-%_= ]+&amp;)*pageId=2(&amp;[a-zA-Z0-9\-%_= ]+)*$" matchType="Regex" />
 	</paths>
 </securitySwitch>
+```
 
 The first entry will ensure that any request for the Contact.aspx page in the Info sub-directory of the site will be secured via HTTPS. The matchType is "Exact" and that means that only an exact request for that path will be matched. In other words, if there is any tail, query string, or bookmark included in a request, it will not be redirected (e.g. /Info/Contact.aspx?ref=email, /Info/Contact.aspx#form).
 
@@ -145,28 +146,31 @@ Finally, if no path entry matches a request, the module will ensure it is access
 
 Take care when ordering your path entries. Order definitely matters. In the example above, entries four and five are ordered specifically to achieve the desired results. If the fourth entry (the one that sets security to "Insecure") were below the fifth entry, the module would never get to it. The module processes entries in the order you specify them, and once it finds a matching entry, it acts on it. In fact, the only reason there is an option to set the security attribute to "Insecure" is to override more general entries below. As in this example, anything in the /Admin sub-directory would be secured if it were not for the fourth entry overriding such behavior for the default page.
 
-IntelliSense and the securitySwitch Section Schema
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+####IntelliSense and the securitySwitch Section Schema
 To enable IntelliSense while editing the securitySwitch section in a web.config file, add an xmlns attribute to the section and include the provided schema file in your solution. Below is an example of the section with the necessary attribute.
 
+```xml
 <securitySwitch xmlns="http://SecuritySwitch-v4.xsd" ...>
 	<paths>
 		...
 	</paths>
 </securitySwitch>
+```
 
 Be sure to either include the SecuritySwitch-v4.xsd file in your solution, or (better still) install the schema file for Visual Studio. If Visual Studio does not automatically detect the schema file in your solution, you can add it to the Schemas property in the Properties window while the web.config file is open. To install the schema file for Visual Studio to always find in all your projects, copy the .xsd file to the appropriate directory, as shown below ([version] indicates the version of Visual Studio you are installing to).
 
-	* for 32-bit systems: %ProgramFiles%\Microsoft Visual Studio [version]\Xml\Schemas
-	* for 64-bit systems: %ProgramFiles(x86)%\Microsoft Visual Studio [version]\Xml\Schemas
+* for 32-bit systems: %ProgramFiles%\Microsoft Visual Studio [version]\Xml\Schemas
+* for 64-bit systems: %ProgramFiles(x86)%\Microsoft Visual Studio [version]\Xml\Schemas
 
 Dynamic Evaluation of Requests
 ------------------------------
 There may be times when you cannot configure the paths that need to be secured, because your application generates URLs/paths dynamically. This is especially true for Content Management Systems (CMS). In those cases, you can leave out the paths element from the configuration section and provide an event handler for the module's EvaluateRequest event. To do this, add an event handler to your site's Global.asax file named, "SecuritySwitch_EvaluateRequest" with the following signature:
 
+```c#
 protected void SecuritySwitch_EvaluateRequest(object sender, EvaluateRequestEventArgs e) {
   // TODO: Update e.ExpectedSecurity based on the current Request.
 }
+```
 
 Set the event argument's ExpectedSecurity property to one of the RequestSecurity values and the module will honor it instead of attempting to figure out how the request should be handled through the configuration of paths.
 
