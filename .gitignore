@@ -1,0 +1,10 @@
+Downloads/*
+Deploy/*
+NuGet/content/SecuritySwitch-v4.xsd
+NuGet/lib/*
+NuGet/*.nupkg
+packages/*
+ExampleWebSite/*log.txt
+TestResults/*
+Testing/*
+.nuget/NuGet.exe
